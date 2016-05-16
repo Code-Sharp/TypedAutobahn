@@ -74,6 +74,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FunctionMetadata.cs" />
+    <Compile Include="IArgumentsService.cs" />
+    <Compile Include="MetadataGenerator.cs" />
+    <Compile Include="ParameterMetadata.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeScriptCodeGenerator.cs" />

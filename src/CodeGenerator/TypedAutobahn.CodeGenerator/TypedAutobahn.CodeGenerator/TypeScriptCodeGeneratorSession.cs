@@ -37,6 +37,5 @@ namespace TypedAutobahn.CodeGenerator
         {
             return null;
         }
-
     }
 }
