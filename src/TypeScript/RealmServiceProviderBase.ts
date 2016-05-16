@@ -1,4 +1,14 @@
 /// <reference path="typings/main.d.ts" />
+
+try {
+    var autobahn = require('autobahn');
+    var when = require('when');
+} catch (e) {
+    // When running in browser, AutobahnJS will
+    // be included without a module system
+    var When = autobahn.when;
+}
+
 interface IMethodInfo {
     uri: string;
     methodArguments: string[];
@@ -15,6 +25,12 @@ class CalleeProxyBase {
     protected singleInvokeAsync<T>(method: IMethodInfo, methodArguments: any[]): When.Promise<T> {
         return this._session.call<T>(method.uri, methodArguments);
     }
+}
+
+interface IContractRealmServiceProvider<TContract, TContractProxy> {
+    registerCallee(instance: TContract): When.Promise<autobahn.IRegistration[]>;
+    registerSubscriber(instance: TContract): When.Promise<autobahn.ISubscription[]>;
+    getCalleeProxy(): TContractProxy;
 }
 
 class RealmServiceProviderBase {
@@ -45,6 +61,13 @@ class RealmServiceProviderBase {
             this.registerMethodAsCallee(methodInfo, converted);
 
         return promise;
+    }
+
+    protected registerMethodsAsCallee(instance: any, ...methods: IMethodInfo[]): When.Promise<autobahn.IRegistration[]> {
+        var registrations: When.Promise<autobahn.IRegistration>[] =
+            methods.map(method => this.registerInstanceMethodInfoAsCallee(instance, method));
+
+        return When.join<autobahn.IRegistration>(registrations);
     }
 
     private static convertCallback(instance: any, methodInfo: IMethodInfo): ((argArray: any[]) => any) {
@@ -84,9 +107,4 @@ class RealmServiceProviderBase {
 
         return methodArguments;
     }
-}
-
-interface IContractRealmServiceProvider<TContract, TContractProxy> {
-    registerCallee(instance: TContract): When.Promise<autobahn.IRegistration[]>;
-    registerSubscriber(instance: TContract): When.Promise<autobahn.ISubscription[]>;
 }

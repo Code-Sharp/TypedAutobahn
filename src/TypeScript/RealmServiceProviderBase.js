@@ -1,4 +1,13 @@
 /// <reference path="typings/main.d.ts" />
+try {
+    var autobahn = require('autobahn');
+    var when = require('when');
+}
+catch (e) {
+    // When running in browser, AutobahnJS will
+    // be included without a module system
+    var When = autobahn.when;
+}
 var CalleeProxyBase = (function () {
     function CalleeProxyBase(session) {
         this._session = session;
@@ -25,6 +34,15 @@ var RealmServiceProviderBase = (function () {
         var converted = RealmServiceProviderBase.convertCallback(instance, methodInfo);
         var promise = this.registerMethodAsCallee(methodInfo, converted);
         return promise;
+    };
+    RealmServiceProviderBase.prototype.registerMethodsAsCallee = function (instance) {
+        var _this = this;
+        var methods = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            methods[_i - 1] = arguments[_i];
+        }
+        var registrations = methods.map(function (method) { return _this.registerInstanceMethodInfoAsCallee(instance, method); });
+        return When.join(registrations);
     };
     RealmServiceProviderBase.convertCallback = function (instance, methodInfo) {
         return function (argArray) { return methodInfo.endpointProvider(instance).apply(instance, argArray); };

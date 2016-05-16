@@ -9,7 +9,7 @@ var ArgumentsServiceProvider = (function (_super) {
         _super.call(this, session);
     }
     ArgumentsServiceProvider.prototype.registerCallee = function (instance) {
-        return autobahn.when.join(_super.prototype.registerInstanceMethodInfoAsCallee.call(this, instance, ArgumentsServiceMetadata.ping), _super.prototype.registerInstanceMethodInfoAsCallee.call(this, instance, ArgumentsServiceMetadata.add2), _super.prototype.registerInstanceMethodInfoAsCallee.call(this, instance, ArgumentsServiceMetadata.stars), _super.prototype.registerInstanceMethodInfoAsCallee.call(this, instance, ArgumentsServiceMetadata.orders));
+        return _super.prototype.registerMethodsAsCallee.call(this, instance, ArgumentsServiceMetadata.ping, ArgumentsServiceMetadata.add2, ArgumentsServiceMetadata.stars, ArgumentsServiceMetadata.orders);
     };
     ArgumentsServiceProvider.prototype.registerSubscriber = function (instance) {
         return When.resolve([]);

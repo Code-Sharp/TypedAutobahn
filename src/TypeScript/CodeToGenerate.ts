@@ -4,10 +4,11 @@ class ArgumentsServiceProvider extends RealmServiceProviderBase implements ICont
     }
 
     public registerCallee(instance: IArgumentsService): When.Promise<autobahn.IRegistration[]> {
-        return autobahn.when.join(super.registerInstanceMethodInfoAsCallee(instance, ArgumentsServiceMetadata.ping),
-            super.registerInstanceMethodInfoAsCallee(instance, ArgumentsServiceMetadata.add2),
-            super.registerInstanceMethodInfoAsCallee(instance, ArgumentsServiceMetadata.stars),
-            super.registerInstanceMethodInfoAsCallee(instance, ArgumentsServiceMetadata.orders));
+        return super.registerMethodsAsCallee(instance,
+            ArgumentsServiceMetadata.ping,
+            ArgumentsServiceMetadata.add2,
+            ArgumentsServiceMetadata.stars,
+            ArgumentsServiceMetadata.orders);
     }
 
     registerSubscriber(instance: IArgumentsService): When.Promise<autobahn.ISubscription[]> {
