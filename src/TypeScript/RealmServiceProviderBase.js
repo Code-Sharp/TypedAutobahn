@@ -3,11 +3,7 @@ var CalleeProxyBase = (function () {
     function CalleeProxyBase(session) {
         this._session = session;
     }
-    CalleeProxyBase.prototype.singleInvokeAsync = function (method) {
-        var methodArguments = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            methodArguments[_i - 1] = arguments[_i];
-        }
+    CalleeProxyBase.prototype.singleInvokeAsync = function (method, methodArguments) {
         return this._session.call(method.uri, methodArguments);
     };
     return CalleeProxyBase;
@@ -24,6 +20,14 @@ var RealmServiceProviderBase = (function () {
         };
         var promise = this._session.subscribe(methodInfo.uri, modifiedEndpoint);
         return promise;
+    };
+    RealmServiceProviderBase.prototype.registerInstanceMethodInfoAsCallee = function (instance, methodInfo) {
+        var converted = RealmServiceProviderBase.convertCallback(instance, methodInfo);
+        var promise = this.registerMethodAsCallee(methodInfo, converted);
+        return promise;
+    };
+    RealmServiceProviderBase.convertCallback = function (instance, methodInfo) {
+        return function (argArray) { return methodInfo.endpointProvider(instance).apply(instance, argArray); };
     };
     RealmServiceProviderBase.prototype.registerMethodAsCallee = function (methodInfo, callback) {
         var _this = this;
@@ -49,62 +53,4 @@ var RealmServiceProviderBase = (function () {
         return methodArguments;
     };
     return RealmServiceProviderBase;
-}());
-var ArgumentsService = (function () {
-    function ArgumentsService() {
-        this._methodInfo1 = {
-            uri: "com.arguments.ping",
-            methodArguments: []
-        };
-        this._methodInfo2 = {
-            uri: "com.arguments.add2",
-            methodArguments: ["a", "b"]
-        };
-        this._methodInfo3 = {
-            uri: "com.arguments.stars",
-            methodArguments: ["nick", "stars"]
-        };
-        this._methodInfo4 = {
-            uri: "com.arguments.stars",
-            methodArguments: ["product", "limit"]
-        };
-    }
-    return ArgumentsService;
-}());
-var ArgumentsServiceBase = (function () {
-    function ArgumentsServiceBase() {
-    }
-    Object.defineProperty(ArgumentsServiceBase, "Metadata", {
-        get: function () {
-            return [
-                ArgumentsServiceBase._methodInfo1,
-                ArgumentsServiceBase._methodInfo2,
-                ArgumentsServiceBase._methodInfo3,
-                ArgumentsServiceBase._methodInfo4
-            ];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ArgumentsServiceBase._methodInfo1 = {
-        uri: "com.arguments.ping",
-        methodArguments: [],
-        endpoint: ArgumentsServiceBase.prototype.Ping
-    };
-    ArgumentsServiceBase._methodInfo2 = {
-        uri: "com.arguments.add2",
-        methodArguments: ["a", "b"],
-        endpoint: ArgumentsServiceBase.prototype.Add2
-    };
-    ArgumentsServiceBase._methodInfo3 = {
-        uri: "com.arguments.stars",
-        methodArguments: ["nick", "stars"],
-        endpoint: ArgumentsServiceBase.prototype.Stars
-    };
-    ArgumentsServiceBase._methodInfo4 = {
-        uri: "com.arguments.orders",
-        methodArguments: ["product", "limit"],
-        endpoint: ArgumentsServiceBase.prototype.Orders
-    };
-    return ArgumentsServiceBase;
 }());
