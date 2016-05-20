@@ -99,3 +99,45 @@ interface MyClass {
     Counter: number;
     Foo: number[];
 }
+
+class IArgumentsServiceProvider extends RealmServiceProviderBase implements IContractRealmServiceProvider<IArgumentsService, IArgumentsServiceProxy> {
+    constructor(session: autobahn.Session) {
+        super(session);
+    }
+
+    public registerCallee(instance: IArgumentsService): When.Promise<autobahn.IRegistration[]> {
+        return super.registerMethodsAsCallee(instance,
+            IArgumentsServiceMetadata.ping,
+            IArgumentsServiceMetadata.add2,
+            IArgumentsServiceMetadata.stars,
+            IArgumentsServiceMetadata.orders);
+    }
+
+    registerSubscriber(instance: IArgumentsService): When.Promise<autobahn.ISubscription[]> {
+        return When.resolve<autobahn.ISubscription[]>([]);
+    }
+
+    getCalleeProxy(): IArgumentsServiceProxy {
+        return new IArgumentsServiceProxyImpl(this._session);
+    }
+}
+
+class IMySubscriberProvider extends RealmServiceProviderBase implements IContractRealmServiceProvider<IMySubscriber, IMySubscriberProxy> {
+    constructor(session: autobahn.Session) {
+        super(session);
+    }
+
+    public registerCallee(instance: IMySubscriber): When.Promise<autobahn.IRegistration[]> {
+        return When.resolve<autobahn.IRegistration[]>([]);
+    }
+
+    registerSubscriber(instance: IMySubscriber): When.Promise<autobahn.ISubscription[]> {
+        return super.registerMethodsAsSubscriber(instance,
+            IMySubscriberMetadata.onHeartbeat,
+            IMySubscriberMetadata.onTopic2);
+    }
+
+    getCalleeProxy(): IMySubscriberProxy {
+        return new IMySubscriberProxyImpl(this._session);
+    }
+}

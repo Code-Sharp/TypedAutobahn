@@ -1,12 +1,28 @@
 var connection = new autobahn.Connection({ url: "ws://127.0.0.1:8080/ws", realm: "realm1" });
 connection.open();
 
-connection.onopen = (session: autobahn.Session, details: any) => {
-    let serviceProvider = new ArgumentsServiceProvider(session);
+class MySubscriberImpl implements IMySubscriber {
+    onHeartbeat(): void {
+        console.log("Heartbeat");
+    }
 
-    var promise = serviceProvider.registerCallee(new ArgumentsServiceCallee());
+    onTopic2(number1: number, number2: number, c: string, d: MyClass): void {
+        console.log(`number1:${number1} number2:${number2} c:${c} d:${d}`);
+    }
+}
+
+connection.onopen = (session: autobahn.Session, details: any) => {
+    let serviceProvider = new IMySubscriberProvider(session);
+
+    var promise = serviceProvider.registerSubscriber(new MySubscriberImpl());
 
     promise.then(x => console.log("all registered!"));
+
+    //let serviceProvider = new IArgumentsServiceProvider(session);
+
+    //var promise = serviceProvider.registerCallee(new ArgumentsServiceCallee());
+
+    //promise.then(x => console.log("all registered!"));
 
     //var proxy = serviceProvider.getCalleeProxy();
 

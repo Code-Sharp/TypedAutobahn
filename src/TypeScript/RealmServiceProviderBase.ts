@@ -70,6 +70,24 @@ class RealmServiceProviderBase {
         return When.join<autobahn.IRegistration>(registrations);
     }
 
+    protected registerInstanceMethodInfoAsSubscriber(instance: any, methodInfo: IMethodInfo): When.Promise<autobahn.ISubscription> {
+        var converted =
+            RealmServiceProviderBase.convertCallback(instance, methodInfo);
+
+        var promise: When.Promise<autobahn.ISubscription> =
+            this.registerMethodAsSubscriber(methodInfo, converted);
+
+        return promise;
+    }
+
+    protected registerMethodsAsSubscriber(instance: any, ...methods: IMethodInfo[]): When.Promise<autobahn.ISubscription[]> {
+        var subscriptions: When.Promise<autobahn.ISubscription>[] =
+            methods.map(method => this.registerInstanceMethodInfoAsSubscriber(instance, method));
+
+        return When.join<autobahn.ISubscription>(subscriptions);
+    }
+
+
     private static convertCallback(instance: any, methodInfo: IMethodInfo): ((argArray: any[]) => any) {
         return (argArray: any[]) => methodInfo.endpointProvider(instance).apply(instance, argArray);
     }

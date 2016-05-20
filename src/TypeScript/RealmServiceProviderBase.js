@@ -44,6 +44,20 @@ var RealmServiceProviderBase = (function () {
         var registrations = methods.map(function (method) { return _this.registerInstanceMethodInfoAsCallee(instance, method); });
         return When.join(registrations);
     };
+    RealmServiceProviderBase.prototype.registerInstanceMethodInfoAsSubscriber = function (instance, methodInfo) {
+        var converted = RealmServiceProviderBase.convertCallback(instance, methodInfo);
+        var promise = this.registerMethodAsSubscriber(methodInfo, converted);
+        return promise;
+    };
+    RealmServiceProviderBase.prototype.registerMethodsAsSubscriber = function (instance) {
+        var _this = this;
+        var methods = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            methods[_i - 1] = arguments[_i];
+        }
+        var subscriptions = methods.map(function (method) { return _this.registerInstanceMethodInfoAsSubscriber(instance, method); });
+        return When.join(subscriptions);
+    };
     RealmServiceProviderBase.convertCallback = function (instance, methodInfo) {
         return function (argArray) { return methodInfo.endpointProvider(instance).apply(instance, argArray); };
     };
