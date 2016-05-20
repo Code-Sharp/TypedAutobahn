@@ -65,3 +65,37 @@ class IArgumentsServiceProxyImpl extends CalleeProxyBase implements IArgumentsSe
         return super.singleInvokeAsync<string[]>(IArgumentsServiceMetadata.orders, [product, limit]);
     }
 }
+
+class IMySubscriberMetadata {
+    static onHeartbeat: IMethodInfo = {
+        uri: "com.myapp.heartbeat",
+        methodArguments: [],
+        endpointProvider: (instance: IMySubscriber) => instance.onHeartbeat
+    };
+
+    static onTopic2: IMethodInfo = {
+        uri: "com.myapp.topic2",
+        methodArguments: ["number1", "number2", "c", "d"],
+        endpointProvider: (instance: IMySubscriber) => instance.onTopic2
+    };
+}
+
+interface IMySubscriber {
+    onHeartbeat(): When.Promise<void> | void;
+
+    onTopic2(number1: number, number2: number, c: string, d: MyClass): When.Promise<void> | void;
+}
+
+interface IMySubscriberProxy {
+}
+
+class IMySubscriberProxyImpl extends CalleeProxyBase implements IMySubscriberProxy {
+    constructor(session: autobahn.Session) {
+        super(session);
+    }
+}
+
+interface MyClass {
+    Counter: number;
+    Foo: number[];
+}

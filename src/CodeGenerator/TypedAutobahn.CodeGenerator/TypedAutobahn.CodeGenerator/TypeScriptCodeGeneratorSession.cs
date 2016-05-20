@@ -28,7 +28,7 @@ namespace TypedAutobahn.CodeGenerator
 
         private string GenerateCommonCode(Type[] contractTypes)
         {
-            DataContractGenerator generator = new DataContractGenerator(mNameProvider);
+            DataContractGenerator generator = new DataContractGenerator(mMapper, mNameProvider);
 
             return generator.GenerateDataContracts(contractTypes);
         }

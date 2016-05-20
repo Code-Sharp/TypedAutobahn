@@ -10,6 +10,7 @@ namespace TypedAutobahn.CodeGenerator
                 new TypeScriptCodeGeneratorSession(new DefaultContractNameProvider());
 
             var generatedCode =
+                session.GenerateCode(new Type[] {typeof(IArgumentsService),typeof(IMySubscriber)});
         }
     }
 }

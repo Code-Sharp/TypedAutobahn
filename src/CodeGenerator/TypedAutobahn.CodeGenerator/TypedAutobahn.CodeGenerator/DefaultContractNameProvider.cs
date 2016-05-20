@@ -27,7 +27,16 @@ namespace TypedAutobahn.CodeGenerator
 
         public string ProvideName(Type type)
         {
-            return type.Name;
+            string typeName = type.Name;
+
+            if (type.IsGenericType)
+            {
+                return typeName.Substring(0, typeName.IndexOf("`"));
+            }
+            else
+            {
+                return typeName;
+            }
         }
 
         public string ProvideName(PropertyInfo property)

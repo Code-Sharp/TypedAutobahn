@@ -29,7 +29,7 @@ namespace TypedAutobahn.CodeGenerator
                 (x => new ParameterMetadata()
                 {
                     Alias = mNameProvider.ProvideName(x),
-                    Type = ConvertType(x.ParameterType),
+                    Type = MapType(x.ParameterType),
                     Optional = x.HasDefaultValue
                 });
 
@@ -54,44 +54,16 @@ namespace TypedAutobahn.CodeGenerator
                 ContractName = interfaceName,
                 Parameters = parameters,
                 Uri = procedure,
-                ReturnValueType = ConvertType(UnwrapReturnType(method.ReturnType))
+                ReturnValueType = MapType(TaskExtensions.UnwrapReturnType(method.ReturnType))
             };
         }
 
-        /// <summary>
-        /// Unwraps the return type of a given method.
-        /// </summary>
-        /// <param name="returnType">The given return type.</param>
-        /// <returns>The unwrapped return type.</returns>
-        /// <example>
-        /// void, Task -> object
-        /// Task{string} -> string
-        /// int -> int
-        /// </example>
-        private static Type UnwrapReturnType(Type returnType)
-        {
-            if (returnType == typeof(void) || returnType == typeof(Task))
-            {
-                return typeof(void);
-            }
-
-            Type taskType =
-                returnType.GetClosedGenericTypeImplementation(typeof(Task<>));
-
-            if (taskType != null)
-            {
-                return returnType.GetGenericArguments()[0];
-            }
-
-            return returnType;
-        }
-
-        private string ConvertType(Type parameterType)
+        public string MapType(Type parameterType)
         {
             if (parameterType.IsGenericType &&
                 parameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                return ConvertType(parameterType.GetGenericArguments()[0]);
+                return MapType(parameterType.GetGenericArguments()[0]);
             }
             else if (typeof(ICollection<>).IsGenericAssignableFrom(parameterType))
             {
@@ -99,7 +71,7 @@ namespace TypedAutobahn.CodeGenerator
                     parameterType.GetClosedGenericTypeImplementation(typeof(ICollection<>))
                                  .GetGenericArguments()[0];
 
-                string arrayType = ConvertType(elementType);
+                string arrayType = MapType(elementType);
 
                 return arrayType + "[]";
             }
@@ -107,7 +79,7 @@ namespace TypedAutobahn.CodeGenerator
             {
                 return string.Format("{0}<{1}>",
                                      mNameProvider.ProvideName(parameterType.GetGenericTypeDefinition()),
-                                     string.Join(", ", parameterType.GetGenericArguments().Select(x => ConvertType(x))));
+                                     string.Join(", ", parameterType.GetGenericArguments().Select(x => MapType(x))));
             }
             else if (parameterType == typeof(void))
             {
@@ -116,6 +88,10 @@ namespace TypedAutobahn.CodeGenerator
             else if (parameterType == typeof(bool))
             {
                 return "boolean";
+            }
+            else if (parameterType == typeof(DateTime))
+            {
+                return "Date";
             }
             else if (parameterType == typeof(string))
             {

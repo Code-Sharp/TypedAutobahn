@@ -21,22 +21,21 @@ namespace TypedAutobahn.CodeGenerator
                 contractType.GetMethods().
                              Where(x => CustomAttributeExtensions.IsDefined((MemberInfo) x, typeof(WampProcedureAttribute)));
 
-            List<string> fields = new List<string>();
+            List<string> generatedMethods = new List<string>();
 
             foreach (MethodInfo method in methods)
             {
-                string fieldDeclaration = GenerateMethodDeclaration(mContractMapper.MapMethod(method));
-                fields.Add(fieldDeclaration);
+                string methodDeclaration = GenerateMethodDeclaration(mContractMapper.MapMethod(method));
+                generatedMethods.Add(methodDeclaration);
             }
 
-            string methodDeclarations = String.Join(Environment.NewLine, fields);
+            string methodDeclarations = String.Join(string.Empty, generatedMethods);
 
             var metadataClass =
                 $@"class {contractType.Name}ProxyImpl extends CalleeProxyBase implements {contractType.Name}Proxy {{
     constructor(session: autobahn.Session) {{
         super(session);
-    }}
-{methodDeclarations}
+    }}{methodDeclarations}
 }}";
 
             return metadataClass;
@@ -47,6 +46,7 @@ namespace TypedAutobahn.CodeGenerator
             string parameters = string.Join(", ", metadata.Parameters.Select(x => $"{x.Alias}{(x.Optional ? "?" : string.Empty)} : {x.Type}"));
 
             return $@"
+
     {metadata.Alias}({parameters}): When.Promise<{metadata.ReturnValueType}> {{
         return super.singleInvokeAsync<{metadata.ReturnValueType}>({metadata.ContractName}Metadata.{metadata.Alias}, [{string.Join(", ", metadata.Parameters.Select(x => x.Alias))}]);
     }}";
