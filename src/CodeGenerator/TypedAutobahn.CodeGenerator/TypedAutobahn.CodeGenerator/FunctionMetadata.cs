@@ -18,11 +18,12 @@ namespace TypedAutobahn.CodeGenerator
 
         public static FunctionMetadata FromProcedure(MethodInfo method)
         {
-            IEnumerable<ParameterMetadata> parameterNames = method.GetParameters().Select
+            IEnumerable<ParameterMetadata> parameters = method.GetParameters().Select
                 (x => new ParameterMetadata()
                 {
                     Alias = x.Name,
-                    Type = ConvertType(x.ParameterType)
+                    Type = ConvertType(x.ParameterType),
+                    Optional = x.HasDefaultValue
                 });
 
             WampProcedureAttribute attribute = method.GetCustomAttribute<WampProcedureAttribute>();
@@ -32,7 +33,7 @@ namespace TypedAutobahn.CodeGenerator
             {
                 Alias = method.Name,
                 ContractName = interfaceName,
-                Parameters = parameterNames,
+                Parameters = parameters,
                 Uri = attribute.Procedure,
                 ReturnValueType = ConvertType(UnwrapReturnType(method.ReturnType))
             };

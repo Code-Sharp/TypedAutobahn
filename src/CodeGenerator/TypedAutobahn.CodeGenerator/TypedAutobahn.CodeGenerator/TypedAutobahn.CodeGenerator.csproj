@@ -74,6 +74,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContractGenerator.cs" />
     <Compile Include="FunctionMetadata.cs" />
     <Compile Include="IArgumentsService.cs" />
     <Compile Include="MetadataGenerator.cs" />
