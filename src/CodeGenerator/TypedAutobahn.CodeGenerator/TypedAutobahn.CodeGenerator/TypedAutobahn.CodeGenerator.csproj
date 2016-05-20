@@ -74,14 +74,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="ContractType.cs" />
+    <Compile Include="DataContractGenerator.cs" />
+    <Compile Include="DefaultContractNameProvider.cs" />
     <Compile Include="ContractGenerator.cs" />
+    <Compile Include="ContractMapper.cs" />
     <Compile Include="FunctionMetadata.cs" />
     <Compile Include="IArgumentsService.cs" />
+    <Compile Include="IContractNameProvider.cs" />
     <Compile Include="MetadataGenerator.cs" />
     <Compile Include="ParameterMetadata.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeScriptCodeGenerator.cs" />
+    <Compile Include="ProxyImplementationGenerator.cs" />
     <Compile Include="TypeScriptCodeGeneratorSession.cs" />
   </ItemGroup>
   <ItemGroup>

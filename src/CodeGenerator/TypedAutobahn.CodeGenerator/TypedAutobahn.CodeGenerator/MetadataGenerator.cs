@@ -2,20 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using WampSharp.V2.PubSub;
+using WampSharp.V2.Rpc;
 
 namespace TypedAutobahn.CodeGenerator
 {
-    public class MetadataGenerator
+    internal class MetadataGenerator
     {
-        public static string GenerateMetadata(Type contractType)
+        private readonly ContractMapper mMapper;
+
+        public MetadataGenerator(ContractMapper mapper)
         {
-            MethodInfo[] methods = contractType.GetMethods();
+            mMapper = mapper;
+        }
+
+        public string GenerateMetadata(Type contractType)
+        {
+            var methods =
+                contractType.GetMethods()
+                            .Where(x => x.IsDefined(typeof(WampProcedureAttribute)) ||
+                                        x.IsDefined(typeof(WampTopicAttribute)));
 
             List<string> fields = new List<string>();
 
             foreach (MethodInfo method in methods)
             {
-                string fieldDeclaration = WriteMethodInfoDeclaration(FunctionMetadata.FromProcedure(method));
+                string fieldDeclaration = WriteMethodInfoDeclaration(mMapper.MapMethod(method));
                 fields.Add(fieldDeclaration);
             }
 

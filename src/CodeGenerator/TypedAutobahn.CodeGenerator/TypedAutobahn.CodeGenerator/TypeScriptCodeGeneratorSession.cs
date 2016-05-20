@@ -1,41 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TypedAutobahn.CodeGenerator
 {
     public class TypeScriptCodeGeneratorSession
     {
-        private readonly Type[] mContractTypes;
+        private readonly IContractNameProvider mNameProvider;
+        private readonly ContractMapper mMapper;
 
-        public TypeScriptCodeGeneratorSession(Type[] contractTypes)
+        public TypeScriptCodeGeneratorSession(IContractNameProvider nameProvider)
         {
-            mContractTypes = contractTypes;
+            mNameProvider = nameProvider;
+            mMapper = new ContractMapper(nameProvider);
         }
 
-        public string GenerateServiceProvider()
+        public string GenerateCode(Type[] contractTypes)
         {
-            List<string> generatedContracts = new List<string>();
+            string contractsCode =
+                string.Join(Environment.NewLine+ Environment.NewLine,
+                            contractTypes.Select(x => GenerateContractTypeCode(x)));
 
-            foreach (Type contractType in mContractTypes)
-            {
-                string contractCode = GenerateContractCode(contractType);
-            }
+            string commonCode = GenerateCommonCode(contractTypes);
 
-            List<string> commonContracts = GenerateCommonContracts();
-
-            generatedContracts.AddRange(commonContracts);
-
-            return string.Join(Environment.NewLine, generatedContracts);
+            return $@"{contractsCode}{commonCode}";
         }
 
-        private List<string> GenerateCommonContracts()
+        private string GenerateCommonCode(Type[] contractTypes)
         {
-            return null;
+            DataContractGenerator generator = new DataContractGenerator(mNameProvider);
+
+            return generator.GenerateDataContracts(contractTypes);
         }
 
-        private string GenerateContractCode(Type contractType)
+        private string GenerateContractTypeCode(Type contractType)
         {
-            return null;
+            string metadata = GenerateMetadata(contractType);
+
+            string calleeInterface = GenerateCalleeInterface(contractType);
+
+            string proxyInterface = GenerateProxy(contractType);
+
+            string proxyImplementation = GenerateProxyImplementation(contractType);
+
+            return $@"{metadata}
+
+{calleeInterface}
+
+{proxyInterface}
+
+{proxyImplementation}";
+        }
+
+        private string GenerateMetadata(Type type)
+        {
+            MetadataGenerator metadataGenerator = new MetadataGenerator(mMapper);
+
+            return metadataGenerator.GenerateMetadata(type);
+        }
+
+        private string GenerateProxy(Type type)
+        {
+            ContractGenerator contractGenerator = new ContractGenerator(mMapper, ContractType.CalleeProxy);
+
+            return contractGenerator.GenerateInterface(type);
+        }
+
+        private string GenerateProxyImplementation(Type type)
+        {
+            ProxyImplementationGenerator contractGenerator = new ProxyImplementationGenerator(mMapper);
+
+            return contractGenerator.GenerateProxyImplementation(type);
+        }
+
+        private string GenerateCalleeInterface(Type type)
+        {
+            ContractGenerator contractGenerator = new ContractGenerator(mMapper, ContractType.Callee);
+
+            return contractGenerator.GenerateInterface(type);
         }
     }
 }
