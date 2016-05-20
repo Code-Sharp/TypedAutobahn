@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace TypedAutobahn.CodeGenerator
 {
@@ -41,6 +42,12 @@ namespace TypedAutobahn.CodeGenerator
 
         public string ProvideName(PropertyInfo property)
         {
+            if (property.IsDefined(typeof(DataMemberAttribute)))
+            {
+                DataMemberAttribute attribute = property.GetCustomAttribute<DataMemberAttribute>();
+                return attribute.Name;
+            }
+
             return property.Name;
         }
     }

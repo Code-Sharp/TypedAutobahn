@@ -6,7 +6,13 @@ namespace TypedAutobahn.CodeGenerator
 {
     internal class TypeExplorer
     {
+        private readonly Func<Type, bool> mIgnoreTypePredicate;
         private readonly HashSet<Type> mExploredTypes = new HashSet<Type>();
+
+        public TypeExplorer(Func<Type, bool> ignoreTypePredicate)
+        {
+            mIgnoreTypePredicate = ignoreTypePredicate;
+        }
 
         public IEnumerable<Type> ExploredTypes
         {
@@ -18,6 +24,11 @@ namespace TypedAutobahn.CodeGenerator
 
         public void Explore(Type type)
         {
+            if (mIgnoreTypePredicate(type))
+            {
+                return;
+            }
+
             if (type.IsGenericType && !type.IsGenericTypeDefinition)
             {
                 Explore(type.GetGenericTypeDefinition());
