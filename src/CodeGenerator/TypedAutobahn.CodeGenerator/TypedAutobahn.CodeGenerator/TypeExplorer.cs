@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace TypedAutobahn.CodeGenerator
@@ -8,10 +9,13 @@ namespace TypedAutobahn.CodeGenerator
     {
         private readonly Func<Type, bool> mIgnoreTypePredicate;
         private readonly HashSet<Type> mExploredTypes = new HashSet<Type>();
+        private readonly Func<PropertyInfo, bool> mPropertyFilter;
 
-        public TypeExplorer(Func<Type, bool> ignoreTypePredicate)
+        public TypeExplorer(Func<Type, bool> ignoreTypePredicate,
+                            Func<PropertyInfo, bool> propertyFilter)
         {
             mIgnoreTypePredicate = ignoreTypePredicate;
+            mPropertyFilter = propertyFilter;
         }
 
         public IEnumerable<Type> ExploredTypes
@@ -57,7 +61,7 @@ namespace TypedAutobahn.CodeGenerator
                 return;
             }
 
-            foreach (PropertyInfo property in type.GetProperties())
+            foreach (PropertyInfo property in type.GetProperties().Where(mPropertyFilter))
             {
                 Explore(property.PropertyType);
             }
