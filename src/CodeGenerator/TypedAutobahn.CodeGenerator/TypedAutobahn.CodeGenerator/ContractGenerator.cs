@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using WampSharp.V2.PubSub;
-using WampSharp.V2.Rpc;
 
 namespace TypedAutobahn.CodeGenerator
 {
@@ -21,14 +19,14 @@ namespace TypedAutobahn.CodeGenerator
         public string GenerateInterface(Type contractType)
         {
             IEnumerable<MethodInfo> methods =
-                contractType.GetMethods().Where(x => x.IsDefined(typeof(WampProcedureAttribute)) ||
-                                                     x.IsDefined(typeof(WampTopicAttribute)));
+                contractType.GetMethods().Where(x => x.IsDefined(WampSharpAttributes.WampProcedureAttribute) ||
+                                                     x.IsDefined(WampSharpAttributes.WampTopicAttribute));
 
             if (mContractType == ContractType.CalleeProxy)
             {
                 methods =
                     contractType.GetMethods().
-                                 Where(x => x.IsDefined(typeof(WampProcedureAttribute)));
+                                 Where(x => x.IsDefined(WampSharpAttributes.WampProcedureAttribute));
             }
 
             List<string> fields = new List<string>();

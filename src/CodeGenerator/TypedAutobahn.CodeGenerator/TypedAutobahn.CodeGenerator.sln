@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypedAutobahn.CodeGenerator", "TypedAutobahn.CodeGenerator\TypedAutobahn.CodeGenerator.csproj", "{733845C3-DFD3-4D53-B859-AA01187807F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "Main\Main.csproj", "{7470ACA1-2D50-4FEE-B80A-40168D876534}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{733845C3-DFD3-4D53-B859-AA01187807F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{733845C3-DFD3-4D53-B859-AA01187807F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{733845C3-DFD3-4D53-B859-AA01187807F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7470ACA1-2D50-4FEE-B80A-40168D876534}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7470ACA1-2D50-4FEE-B80A-40168D876534}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7470ACA1-2D50-4FEE-B80A-40168D876534}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7470ACA1-2D50-4FEE-B80A-40168D876534}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

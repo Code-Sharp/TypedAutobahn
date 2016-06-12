@@ -1,10 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using WampSharp.Core.Utilities;
-using WampSharp.V2.Rpc;
 
 namespace TypedAutobahn.CodeGenerator
 {

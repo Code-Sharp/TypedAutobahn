@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using WampSharp.V2.PubSub;
-using WampSharp.V2.Rpc;
 
 namespace TypedAutobahn.CodeGenerator
 {
@@ -20,8 +18,8 @@ namespace TypedAutobahn.CodeGenerator
         {
             var methods =
                 contractType.GetMethods()
-                            .Where(x => x.IsDefined(typeof(WampProcedureAttribute)) ||
-                                        x.IsDefined(typeof(WampTopicAttribute)));
+                            .Where(x => x.IsDefined(WampSharpAttributes.WampProcedureAttribute) ||
+                                        x.IsDefined(WampSharpAttributes.WampTopicAttribute));
 
             List<string> fields = new List<string>();
 

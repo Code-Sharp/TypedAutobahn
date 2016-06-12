@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using WampSharp.V2.PubSub;
-using WampSharp.V2.Rpc;
 
 namespace TypedAutobahn.CodeGenerator
 {
@@ -21,10 +19,10 @@ namespace TypedAutobahn.CodeGenerator
             string serviceName = mMapper.MapType(contractType);
 
             string subscriberArguments =
-                GetArguments(contractType, typeof(WampTopicAttribute));
+                GetArguments(contractType, WampSharpAttributes.WampTopicAttribute);
 
             string calleeArguments =
-                GetArguments(contractType, typeof(WampProcedureAttribute));
+                GetArguments(contractType, WampSharpAttributes.WampProcedureAttribute);
 
             return
                 $@"class {serviceName}Provider extends RealmServiceProviderBase implements IContractRealmServiceProvider<{serviceName}, {serviceName}Proxy> {{

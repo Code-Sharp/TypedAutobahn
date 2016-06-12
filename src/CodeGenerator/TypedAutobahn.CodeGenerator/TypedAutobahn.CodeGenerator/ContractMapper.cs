@@ -2,10 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using WampSharp.Core.Utilities;
-using WampSharp.V2.PubSub;
-using WampSharp.V2.Rpc;
 
 namespace TypedAutobahn.CodeGenerator
 {
@@ -35,14 +31,14 @@ namespace TypedAutobahn.CodeGenerator
 
             string procedure = null;
 
-            if (method.IsDefined(typeof(WampProcedureAttribute)))
+            if (method.IsDefined(WampSharpAttributes.WampProcedureAttribute))
             {
-                WampProcedureAttribute attribute = method.GetCustomAttribute<WampProcedureAttribute>();
+                dynamic attribute = method.GetCustomAttribute(WampSharpAttributes.WampProcedureAttribute);
                 procedure = attribute.Procedure;
             }
-            else if (method.IsDefined(typeof(WampTopicAttribute)))
+            else if (method.IsDefined(WampSharpAttributes.WampTopicAttribute))
             {
-                WampTopicAttribute attribute = method.GetCustomAttribute<WampTopicAttribute>();
+                dynamic attribute = method.GetCustomAttribute(WampSharpAttributes.WampTopicAttribute);
                 procedure = attribute.Topic;
             }
 
@@ -55,7 +51,7 @@ namespace TypedAutobahn.CodeGenerator
                 Parameters = parameters,
                 Uri = procedure,
                 ReturnValueType = MapType(TaskExtensions.UnwrapReturnType(method.ReturnType)),
-                EventHandler = method.IsDefined(typeof(WampTopicAttribute))
+                EventHandler = method.IsDefined(WampSharpAttributes.WampTopicAttribute)
             };
         }
 

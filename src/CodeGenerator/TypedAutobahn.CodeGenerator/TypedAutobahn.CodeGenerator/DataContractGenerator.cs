@@ -4,10 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using WampSharp.Core.Utilities;
-using WampSharp.V2;
-using WampSharp.V2.PubSub;
-using WampSharp.V2.Rpc;
 
 namespace TypedAutobahn.CodeGenerator
 {
@@ -26,8 +22,8 @@ namespace TypedAutobahn.CodeGenerator
         {
             IEnumerable<Type> initialTypes =
                 interfaces.SelectMany(x => x.GetMethods())
-                          .Where(x => x.IsDefined(typeof(WampProcedureAttribute), true) ||
-                                      x.IsDefined(typeof(WampTopicAttribute), true))
+                          .Where(x => x.IsDefined(WampSharpAttributes.WampProcedureAttribute, true) ||
+                                      x.IsDefined(WampSharpAttributes.WampTopicAttribute, true))
                           .SelectMany(x => x.GetParameters().Select(parameter => parameter.ParameterType)
                                             .Concat(new[] {TaskExtensions.UnwrapReturnType(x.ReturnType)}));
 
@@ -36,8 +32,7 @@ namespace TypedAutobahn.CodeGenerator
                                          type == typeof(string) ||
                                          type == typeof(Nullable<>) ||
                                          type == typeof(DateTime) ||
-                                         type == typeof(object) ||
-                                         type == typeof(ISerializedValue),
+                                         type == typeof(object),
                                  property => !property.IsDefined(typeof(IgnoreDataMemberAttribute)));
 
             foreach (Type type in initialTypes)

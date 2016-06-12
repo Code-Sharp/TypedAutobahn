@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using WampSharp.V2.Rpc;
 
 namespace TypedAutobahn.CodeGenerator
 {
@@ -19,7 +18,7 @@ namespace TypedAutobahn.CodeGenerator
         {
             IEnumerable<MethodInfo> methods =
                 contractType.GetMethods().
-                             Where(x => CustomAttributeExtensions.IsDefined((MemberInfo) x, typeof(WampProcedureAttribute)));
+                             Where(x => CustomAttributeExtensions.IsDefined((MemberInfo) x, WampSharpAttributes.WampProcedureAttribute));
 
             List<string> generatedMethods = new List<string>();
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using WampSharp.Core.Utilities;
 
 namespace TypedAutobahn.CodeGenerator
 {
