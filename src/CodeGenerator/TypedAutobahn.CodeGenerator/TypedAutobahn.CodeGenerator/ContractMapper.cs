@@ -54,7 +54,8 @@ namespace TypedAutobahn.CodeGenerator
                 ContractName = interfaceName,
                 Parameters = parameters,
                 Uri = procedure,
-                ReturnValueType = MapType(TaskExtensions.UnwrapReturnType(method.ReturnType))
+                ReturnValueType = MapType(TaskExtensions.UnwrapReturnType(method.ReturnType)),
+                EventHandler = method.IsDefined(typeof(WampTopicAttribute))
             };
         }
 

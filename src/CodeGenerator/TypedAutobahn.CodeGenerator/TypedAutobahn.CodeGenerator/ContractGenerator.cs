@@ -59,18 +59,23 @@ namespace TypedAutobahn.CodeGenerator
         {
             string parameters = string.Join(", ", metadata.Parameters.Select(x => $"{x.Alias}{(x.Optional ? "?" : string.Empty)} : {x.Type}"));
 
-            if (this.mContractType == ContractType.CalleeProxy)
+            string returnType = null;
+
+            if (metadata.EventHandler)
             {
-                return $@"
-    {metadata.Alias}({parameters}): When.Promise<{metadata.ReturnValueType}>;";
+                returnType = "void";
+            }
+            else if (this.mContractType == ContractType.CalleeProxy)
+            {
+                returnType = "When.Promise<{metadata.ReturnValueType}>";
             }
             else if (this.mContractType == ContractType.Callee)
             {
-                return $@"
-    {metadata.Alias}({parameters}): When.Promise<{metadata.ReturnValueType}> | {metadata.ReturnValueType};";
+                returnType = $"When.Promise<{metadata.ReturnValueType}> | {metadata.ReturnValueType}";
             }
 
-            return null;
+            return $@"
+    {metadata.Alias}({parameters}): {returnType};";
         }
     }
 }

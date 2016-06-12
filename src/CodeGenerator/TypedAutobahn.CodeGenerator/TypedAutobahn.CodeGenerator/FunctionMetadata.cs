@@ -15,5 +15,6 @@ namespace TypedAutobahn.CodeGenerator
         public IEnumerable<ParameterMetadata> Parameters { get; set; }
         public string ContractName { get; set; }
         public string ReturnValueType { get; set; }
+        public bool EventHandler { get; set; }
     }
 }
