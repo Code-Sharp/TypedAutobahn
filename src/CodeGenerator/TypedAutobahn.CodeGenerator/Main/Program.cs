@@ -12,16 +12,10 @@ namespace TypedAutobahn.CodeGenerator
             TypeScriptCodeGeneratorSession session =
                 new TypeScriptCodeGeneratorSession(new DefaultContractNameProvider());
 
-            var s = typeof(WampProcedureAttribute).FullName;
-
-            var s2 = typeof(WampTopicAttribute).FullName;
-
             var generatedCode =
                 session.GenerateCode(new Type[]
                 {
-                    typeof(IWampRegistrationDescriptor), typeof(IWampRegistrationMetadataSubscriber),
-                    typeof(IWampSubscriptionDescriptor), typeof(IWampSubscriptionMetadataSubscriber),
-                    typeof(IWampSessionDescriptor), typeof(IWampSessionMetadataSubscriber)
+                    typeof(IArgumentsService), typeof(IMySubscriber)
                 });
         }
     }

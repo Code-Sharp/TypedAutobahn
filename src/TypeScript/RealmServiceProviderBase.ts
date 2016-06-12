@@ -2,7 +2,7 @@
 
 try {
     var autobahn = require('autobahn');
-    var when = require('when');
+    var When = require('when');
 } catch (e) {
     // When running in browser, AutobahnJS will
     // be included without a module system
