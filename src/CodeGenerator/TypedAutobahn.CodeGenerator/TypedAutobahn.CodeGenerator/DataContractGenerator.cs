@@ -38,7 +38,7 @@ namespace TypedAutobahn.CodeGenerator
                                          type == typeof(DateTime) ||
                                          type == typeof(object) ||
                                          type == typeof(ISerializedValue),
-                                 property => property.IsDefined(typeof(IgnoreDataMemberAttribute)));
+                                 property => !property.IsDefined(typeof(IgnoreDataMemberAttribute)));
 
             foreach (Type type in initialTypes)
             {
