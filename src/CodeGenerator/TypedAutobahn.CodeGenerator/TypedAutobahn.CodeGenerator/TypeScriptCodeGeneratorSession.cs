@@ -43,13 +43,17 @@ namespace TypedAutobahn.CodeGenerator
 
             string proxyImplementation = GenerateProxyImplementation(contractType);
 
+            string serviceProvider = GenerateServiceProvider(contractType);
+
             return $@"{metadata}
 
 {calleeInterface}
 
 {proxyInterface}
 
-{proxyImplementation}";
+{proxyImplementation}
+
+{serviceProvider}";
         }
 
         private string GenerateMetadata(Type type)
@@ -78,6 +82,13 @@ namespace TypedAutobahn.CodeGenerator
             ContractGenerator contractGenerator = new ContractGenerator(mMapper, ContractType.Callee);
 
             return contractGenerator.GenerateInterface(type);
+        }
+
+        private string GenerateServiceProvider(Type contractType)
+        {
+            ServiceProviderGenerator serviceProviderGenerator = new ServiceProviderGenerator(mMapper);
+
+            return serviceProviderGenerator.GenerateProvider(contractType);
         }
     }
 }
