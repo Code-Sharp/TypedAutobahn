@@ -41,7 +41,7 @@ namespace TypedAutobahn.CodeGenerator
     }}
 
     getCalleeProxy(): {serviceName}Proxy {{
-        return new I{serviceName}ProxyImpl(this._session);
+        return new {serviceName}ProxyImpl(this._session);
     }}
 }}";
         }
