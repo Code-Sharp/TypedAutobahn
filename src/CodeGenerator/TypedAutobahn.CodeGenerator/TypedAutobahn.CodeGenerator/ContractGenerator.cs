@@ -67,7 +67,7 @@ namespace TypedAutobahn.CodeGenerator
             }
             else if (this.mContractType == ContractType.CalleeProxy)
             {
-                returnType = "When.Promise<{metadata.ReturnValueType}>";
+                returnType = $"When.Promise<{metadata.ReturnValueType}>";
             }
             else if (this.mContractType == ContractType.Callee)
             {
