@@ -34,17 +34,17 @@ export class RealmServiceProviderBase {
     }
 
     protected registerMethodsAsCallee(instance: any, ...methods: IMethodInfo[]): When.Promise<autobahn.IRegistration[]> {
-        var registrations: When.Promise<autobahn.IRegistration>[] =
+        let registrations: When.Promise<autobahn.IRegistration>[] =
             methods.map(method => this.registerInstanceMethodInfoAsCallee(instance, method));
 
         return When.join<autobahn.IRegistration>(registrations);
     }
 
     protected registerInstanceMethodInfoAsCallee(instance: any, methodInfo: IMethodInfo): When.Promise<autobahn.IRegistration> {
-        var converted =
+        let converted =
             RealmServiceProviderBase.getCallback(instance, methodInfo);
 
-        var promise: When.Promise<autobahn.IRegistration> =
+        let promise: When.Promise<autobahn.IRegistration> =
             this.registerCalleeCallback(methodInfo, converted);
 
         return promise;
@@ -53,28 +53,28 @@ export class RealmServiceProviderBase {
     private registerCalleeCallback(methodInfo: IMethodInfo,
         callback: (argArray: any[]) => any): When.Promise<autobahn.IRegistration> {
 
-        var modifiedEndpoint = (args?: any[], kwargs?: any, details?: autobahn.IInvocation) => {
+        let modifiedEndpoint = (args?: any[], kwargs?: any, details?: autobahn.IInvocation) => {
             let methodArguments = this.extractArguments(args, kwargs, methodInfo);
             return callback(methodArguments);
         };
 
-        var promise = this._session.register(methodInfo.uri, modifiedEndpoint);
+        let promise = this._session.register(methodInfo.uri, modifiedEndpoint);
 
         return promise;
     }
 
     protected registerMethodsAsSubscriber(instance: any, ...methods: IMethodInfo[]): When.Promise<autobahn.ISubscription[]> {
-        var subscriptions: When.Promise<autobahn.ISubscription>[] =
+        let subscriptions: When.Promise<autobahn.ISubscription>[] =
             methods.map(method => this.registerInstanceMethodInfoAsSubscriber(instance, method));
 
         return When.join<autobahn.ISubscription>(subscriptions);
     }
 
     protected registerInstanceMethodInfoAsSubscriber(instance: any, methodInfo: IMethodInfo): When.Promise<autobahn.ISubscription> {
-        var converted =
+        let converted =
             RealmServiceProviderBase.getCallback(instance, methodInfo);
 
-        var promise: When.Promise<autobahn.ISubscription> =
+        let promise: When.Promise<autobahn.ISubscription> =
             this.registerSubscriberCallback(methodInfo, converted);
 
         return promise;
@@ -83,12 +83,12 @@ export class RealmServiceProviderBase {
     private registerSubscriberCallback(methodInfo: IMethodInfo,
         callback: (subscriberArguments: any[]) => any): When.Promise<autobahn.ISubscription> {
 
-        var modifiedEndpoint = (args?: any[], kwargs?: any, details?: autobahn.IEvent) => {
+        let modifiedEndpoint = (args?: any[], kwargs?: any, details?: autobahn.IEvent) => {
             let methodArguments = this.extractArguments(args, kwargs, methodInfo);
             callback(methodArguments);
         };
 
-        var promise = this._session.subscribe(methodInfo.uri, modifiedEndpoint);
+        let promise = this._session.subscribe(methodInfo.uri, modifiedEndpoint);
 
         return promise;
     }
@@ -98,7 +98,7 @@ export class RealmServiceProviderBase {
     }
 
     private extractArguments(args: any[], kwargs: any, methodInfo: IMethodInfo) {
-        var methodArguments: any[] = [];
+        let methodArguments: any[] = [];
 
         let argsArray: any[] = args || [];
 
