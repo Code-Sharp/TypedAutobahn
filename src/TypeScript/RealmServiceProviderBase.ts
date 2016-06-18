@@ -33,7 +33,54 @@ export class RealmServiceProviderBase {
         this._session = session;
     }
 
-    private registerMethodAsSubscriber(methodInfo: IMethodInfo,
+    protected registerMethodsAsCallee(instance: any, ...methods: IMethodInfo[]): When.Promise<autobahn.IRegistration[]> {
+        var registrations: When.Promise<autobahn.IRegistration>[] =
+            methods.map(method => this.registerInstanceMethodInfoAsCallee(instance, method));
+
+        return When.join<autobahn.IRegistration>(registrations);
+    }
+
+    protected registerInstanceMethodInfoAsCallee(instance: any, methodInfo: IMethodInfo): When.Promise<autobahn.IRegistration> {
+        var converted =
+            RealmServiceProviderBase.getCallback(instance, methodInfo);
+
+        var promise: When.Promise<autobahn.IRegistration> =
+            this.registerCalleeCallback(methodInfo, converted);
+
+        return promise;
+    }
+
+    private registerCalleeCallback(methodInfo: IMethodInfo,
+        callback: (argArray: any[]) => any): When.Promise<autobahn.IRegistration> {
+
+        var modifiedEndpoint = (args?: any[], kwargs?: any, details?: autobahn.IInvocation) => {
+            let methodArguments = this.extractArguments(args, kwargs, methodInfo);
+            return callback(methodArguments);
+        };
+
+        var promise = this._session.register(methodInfo.uri, modifiedEndpoint);
+
+        return promise;
+    }
+
+    protected registerMethodsAsSubscriber(instance: any, ...methods: IMethodInfo[]): When.Promise<autobahn.ISubscription[]> {
+        var subscriptions: When.Promise<autobahn.ISubscription>[] =
+            methods.map(method => this.registerInstanceMethodInfoAsSubscriber(instance, method));
+
+        return When.join<autobahn.ISubscription>(subscriptions);
+    }
+
+    protected registerInstanceMethodInfoAsSubscriber(instance: any, methodInfo: IMethodInfo): When.Promise<autobahn.ISubscription> {
+        var converted =
+            RealmServiceProviderBase.getCallback(instance, methodInfo);
+
+        var promise: When.Promise<autobahn.ISubscription> =
+            this.registerSubscriberCallback(methodInfo, converted);
+
+        return promise;
+    }
+
+    private registerSubscriberCallback(methodInfo: IMethodInfo,
         callback: (subscriberArguments: any[]) => any): When.Promise<autobahn.ISubscription> {
 
         var modifiedEndpoint = (args?: any[], kwargs?: any, details?: autobahn.IEvent) => {
@@ -46,56 +93,8 @@ export class RealmServiceProviderBase {
         return promise;
     }
 
-    protected registerInstanceMethodInfoAsCallee(instance: any, methodInfo: IMethodInfo): When.Promise<autobahn.IRegistration> {
-        var converted =
-            RealmServiceProviderBase.getCallback(instance, methodInfo);
-
-        var promise: When.Promise<autobahn.IRegistration> =
-            this.registerMethodAsCallee(methodInfo, converted);
-
-        return promise;
-    }
-
-    protected registerMethodsAsCallee(instance: any, ...methods: IMethodInfo[]): When.Promise<autobahn.IRegistration[]> {
-        var registrations: When.Promise<autobahn.IRegistration>[] =
-            methods.map(method => this.registerInstanceMethodInfoAsCallee(instance, method));
-
-        return When.join<autobahn.IRegistration>(registrations);
-    }
-
-    protected registerInstanceMethodInfoAsSubscriber(instance: any, methodInfo: IMethodInfo): When.Promise<autobahn.ISubscription> {
-        var converted =
-            RealmServiceProviderBase.getCallback(instance, methodInfo);
-
-        var promise: When.Promise<autobahn.ISubscription> =
-            this.registerMethodAsSubscriber(methodInfo, converted);
-
-        return promise;
-    }
-
-    protected registerMethodsAsSubscriber(instance: any, ...methods: IMethodInfo[]): When.Promise<autobahn.ISubscription[]> {
-        var subscriptions: When.Promise<autobahn.ISubscription>[] =
-            methods.map(method => this.registerInstanceMethodInfoAsSubscriber(instance, method));
-
-        return When.join<autobahn.ISubscription>(subscriptions);
-    }
-
-
     private static getCallback(instance: any, methodInfo: IMethodInfo): ((argArray: any[]) => any) {
         return (argArray: any[]) => methodInfo.endpoint(instance, argArray);
-    }
-
-    private registerMethodAsCallee(methodInfo: IMethodInfo,
-        callback: (argArray: any[]) => any): When.Promise<autobahn.IRegistration> {
-
-        var modifiedEndpoint = (args?: any[], kwargs?: any, details?: autobahn.IInvocation) => {
-            let methodArguments = this.extractArguments(args, kwargs, methodInfo);
-            return callback(methodArguments);
-        };
-
-        var promise = this._session.register(methodInfo.uri, modifiedEndpoint);
-
-        return promise;
     }
 
     private extractArguments(args: any[], kwargs: any, methodInfo: IMethodInfo) {
