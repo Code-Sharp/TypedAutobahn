@@ -10,13 +10,13 @@ namespace TypedAutobahn.CodeGenerator
         static void Main(string[] args)
         {
             TypeScriptCodeGeneratorSession session =
-                new TypeScriptCodeGeneratorSession(new DefaultContractNameProvider());
+                new TypeScriptCodeGeneratorSession(new DefaultContractNameProvider(), true);
 
             var generatedCode =
                 session.GenerateCode(new Type[]
                 {
                     typeof(IArgumentsService)
-                    //, typeof(IMySubscriber)
+                    , typeof(IMySubscriber)
                 });
         }
     }

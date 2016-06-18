@@ -11,11 +11,13 @@ namespace TypedAutobahn.CodeGenerator
     {
         private readonly ContractMapper mMapper;
         private readonly IContractNameProvider mProvider;
+        private readonly bool mNodeJs;
 
-        public DataContractGenerator(ContractMapper mapper,IContractNameProvider provider)
+        public DataContractGenerator(ContractMapper mapper, IContractNameProvider provider, bool nodeJs)
         {
             mMapper = mapper;
             mProvider = provider;
+            mNodeJs = nodeJs;
         }
 
         private Type[] GatherDataContracts(Type[] interfaces)
@@ -98,7 +100,7 @@ namespace TypedAutobahn.CodeGenerator
 
             string result = $@"
 
-interface {interfaceName}{genericArguments} {{
+{(mNodeJs ?"export ":string.Empty)}interface {interfaceName}{genericArguments} {{
 {string.Join(Environment.NewLine, generatedProperties)}
 }}";
 

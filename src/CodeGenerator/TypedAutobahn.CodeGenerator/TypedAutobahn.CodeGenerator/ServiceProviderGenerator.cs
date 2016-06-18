@@ -8,10 +8,12 @@ namespace TypedAutobahn.CodeGenerator
     internal class ServiceProviderGenerator
     {
         private readonly ContractMapper mMapper;
+        private readonly bool mNodeJs;
 
-        public ServiceProviderGenerator(ContractMapper mapper)
+        public ServiceProviderGenerator(ContractMapper mapper, bool nodeJs)
         {
             mMapper = mapper;
+            mNodeJs = nodeJs;
         }
 
         public string GenerateProvider(Type contractType)
@@ -24,8 +26,7 @@ namespace TypedAutobahn.CodeGenerator
             string calleeArguments =
                 GetArguments(contractType, WampSharpAttributes.WampProcedureAttribute);
 
-            return
-                $@"class {serviceName}Provider extends RealmServiceProviderBase implements IContractRealmServiceProvider<{serviceName}, {serviceName}Proxy> {{
+            string result = $@"class {serviceName}Provider extends RealmServiceProviderBase implements IContractRealmServiceProvider<{serviceName}, {serviceName}Proxy> {{
     constructor(session: autobahn.Session) {{
         super(session);
     }}
@@ -42,6 +43,13 @@ namespace TypedAutobahn.CodeGenerator
         return new {serviceName}ProxyImpl(this._session);
     }}
 }}";
+
+            if (mNodeJs)
+            {
+                result = "export " + result;
+            }
+
+            return result;
         }
 
         private string GetArguments(Type contractType, Type attributeType)

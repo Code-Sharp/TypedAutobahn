@@ -45,7 +45,7 @@ namespace TypedAutobahn.CodeGenerator
     static {metadata.Alias}: IMethodInfo = {{
         uri: ""{metadata.Uri}"",
         methodArguments: [{String.Join(", ", metadata.Parameters.Select(parameter => $@"""{parameter.Alias}"""))}],
-        endpointProvider: (instance: {metadata.ContractName}) => instance.{metadata.Alias}
+        endpoint: (instance: {metadata.ContractName}, args:any[]) => instance.{metadata.Alias}({string.Join(", ", metadata.Parameters.Select((x,i) => $"args[{i}]"))})
     }};";
 
             return result;

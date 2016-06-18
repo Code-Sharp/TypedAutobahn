@@ -9,11 +9,13 @@ namespace TypedAutobahn.CodeGenerator
     {
         private readonly ContractMapper mMapper;
         private readonly ContractType mContractType;
+        private readonly bool mNodeJs;
 
-        public ContractGenerator(ContractMapper mapper, ContractType contractType)
+        public ContractGenerator(ContractMapper mapper, ContractType contractType, bool nodeJs)
         {
             mMapper = mapper;
             mContractType = contractType;
+            mNodeJs = nodeJs;
         }
 
         public string GenerateInterface(Type contractType)
@@ -49,6 +51,11 @@ namespace TypedAutobahn.CodeGenerator
             var metadataClass =
                 $@"interface {contractType.Name}{suffix} {{{methodDeclarations}
 }}";
+
+            if (mNodeJs)
+            {
+                metadataClass = "export " + metadataClass;
+            }
 
             return metadataClass;
         }

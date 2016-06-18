@@ -8,10 +8,12 @@ namespace TypedAutobahn.CodeGenerator
     {
         private readonly IContractNameProvider mNameProvider;
         private readonly ContractMapper mMapper;
+        private readonly bool mNodeJs;
 
-        public TypeScriptCodeGeneratorSession(IContractNameProvider nameProvider)
+        public TypeScriptCodeGeneratorSession(IContractNameProvider nameProvider, bool nodeJs)
         {
             mNameProvider = nameProvider;
+            mNodeJs = nodeJs;
             mMapper = new ContractMapper(nameProvider);
         }
 
@@ -28,7 +30,7 @@ namespace TypedAutobahn.CodeGenerator
 
         private string GenerateCommonCode(Type[] contractTypes)
         {
-            DataContractGenerator generator = new DataContractGenerator(mMapper, mNameProvider);
+            DataContractGenerator generator = new DataContractGenerator(mMapper, mNameProvider, mNodeJs);
 
             return generator.GenerateDataContracts(contractTypes);
         }
@@ -65,7 +67,7 @@ namespace TypedAutobahn.CodeGenerator
 
         private string GenerateProxy(Type type)
         {
-            ContractGenerator contractGenerator = new ContractGenerator(mMapper, ContractType.CalleeProxy);
+            ContractGenerator contractGenerator = new ContractGenerator(mMapper, ContractType.CalleeProxy, mNodeJs);
 
             return contractGenerator.GenerateInterface(type);
         }
@@ -79,14 +81,14 @@ namespace TypedAutobahn.CodeGenerator
 
         private string GenerateCalleeInterface(Type type)
         {
-            ContractGenerator contractGenerator = new ContractGenerator(mMapper, ContractType.Callee);
+            ContractGenerator contractGenerator = new ContractGenerator(mMapper, ContractType.Callee, mNodeJs);
 
             return contractGenerator.GenerateInterface(type);
         }
 
         private string GenerateServiceProvider(Type contractType)
         {
-            ServiceProviderGenerator serviceProviderGenerator = new ServiceProviderGenerator(mMapper);
+            ServiceProviderGenerator serviceProviderGenerator = new ServiceProviderGenerator(mMapper, mNodeJs);
 
             return serviceProviderGenerator.GenerateProvider(contractType);
         }

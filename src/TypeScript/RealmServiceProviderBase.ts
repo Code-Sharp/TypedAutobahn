@@ -5,7 +5,7 @@ import * as When from 'when';
 export interface IMethodInfo {
     uri: string;
     methodArguments: string[];
-    endpointProvider?: (instance: any) => Function;
+    endpoint?: (instance: any, argArray : any[]) => any;
 }
 
 export class CalleeProxyBase {
@@ -48,7 +48,7 @@ export class RealmServiceProviderBase {
 
     protected registerInstanceMethodInfoAsCallee(instance: any, methodInfo: IMethodInfo): When.Promise<autobahn.IRegistration> {
         var converted =
-            RealmServiceProviderBase.convertCallback(instance, methodInfo);
+            RealmServiceProviderBase.getCallback(instance, methodInfo);
 
         var promise: When.Promise<autobahn.IRegistration> =
             this.registerMethodAsCallee(methodInfo, converted);
@@ -65,7 +65,7 @@ export class RealmServiceProviderBase {
 
     protected registerInstanceMethodInfoAsSubscriber(instance: any, methodInfo: IMethodInfo): When.Promise<autobahn.ISubscription> {
         var converted =
-            RealmServiceProviderBase.convertCallback(instance, methodInfo);
+            RealmServiceProviderBase.getCallback(instance, methodInfo);
 
         var promise: When.Promise<autobahn.ISubscription> =
             this.registerMethodAsSubscriber(methodInfo, converted);
@@ -81,8 +81,8 @@ export class RealmServiceProviderBase {
     }
 
 
-    private static convertCallback(instance: any, methodInfo: IMethodInfo): ((argArray: any[]) => any) {
-        return (argArray: any[]) => methodInfo.endpointProvider(instance).apply(instance, argArray);
+    private static getCallback(instance: any, methodInfo: IMethodInfo): ((argArray: any[]) => any) {
+        return (argArray: any[]) => methodInfo.endpoint(instance, argArray);
     }
 
     private registerMethodAsCallee(methodInfo: IMethodInfo,
@@ -113,12 +113,7 @@ export class RealmServiceProviderBase {
         // Keyword arguments come later
         for (let i = argsArray.length; i < argumentsMetadata.length; i++) {
             let currentArgumentsName: string = argumentsMetadata[i];
-            let currentValue: any = undefined;
-
-            //// TODO: check if argument is optional, and if so, set it to default value
-            //if (kwargsValue.hasOwnProperty(currentArgumentsName)) {
-                currentValue = kwargsValue[currentArgumentsName];
-            //}
+            let currentValue: any = kwargsValue[currentArgumentsName];
 
             methodArguments.push(currentValue);
         }

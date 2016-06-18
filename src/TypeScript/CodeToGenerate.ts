@@ -6,25 +6,25 @@ class IArgumentsServiceMetadata {
     static ping: IMethodInfo = {
         uri: "com.arguments.ping",
         methodArguments: [],
-        endpointProvider: (instance: IArgumentsService) => instance.ping
+        endpoint: (instance: IArgumentsService, args: any[]) => instance.ping()
     };
 
     static add2: IMethodInfo = {
         uri: "com.arguments.add2",
         methodArguments: ["a", "b"],
-        endpointProvider: (instance: IArgumentsService) => instance.add2
+        endpoint: (instance: IArgumentsService, args: any[]) => instance.add2(args[0], args[1])
     };
 
     static stars: IMethodInfo = {
         uri: "com.arguments.stars",
         methodArguments: ["nick", "stars"],
-        endpointProvider: (instance: IArgumentsService) => instance.stars
+        endpoint: (instance: IArgumentsService, args: any[]) => instance.stars(args[0], args[1])
     };
 
     static orders: IMethodInfo = {
         uri: "com.arguments.orders",
         methodArguments: ["product", "limit"],
-        endpointProvider: (instance: IArgumentsService) => instance.orders
+        endpoint: (instance: IArgumentsService, args: any[]) => instance.orders(args[0], args[1])
     };
 }
 
@@ -96,13 +96,13 @@ class IMySubscriberMetadata {
     static onHeartbeat: IMethodInfo = {
         uri: "com.myapp.heartbeat",
         methodArguments: [],
-        endpointProvider: (instance: IMySubscriber) => instance.onHeartbeat
+        endpoint: (instance: IMySubscriber, args: any[]) => instance.onHeartbeat()
     };
 
     static onTopic2: IMethodInfo = {
         uri: "com.myapp.topic2",
         methodArguments: ["number1", "number2", "c", "d"],
-        endpointProvider: (instance: IMySubscriber) => instance.onTopic2
+        endpoint: (instance: IMySubscriber, args: any[]) => instance.onTopic2(args[0], args[1], args[2], args[3])
     };
 }
 
