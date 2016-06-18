@@ -1,5 +1,7 @@
 /// <reference path="RealmServiceProviderBase.ts" />
 /// <reference path="CodeToGenerate.ts" />
+import * as autobahn from "autobahn";
+
 import {ArgumentsServiceCallee} from "./UserCode";
 import {IMySubscriberProvider,IArgumentsServiceProvider,IMySubscriber,IArgumentsService, MyClass} from "./CodeToGenerate";
 
@@ -21,30 +23,54 @@ class Program {
         let serviceProvider = new IArgumentsServiceProvider(session);
 
         var result = await serviceProvider.getCalleeProxy().add2(3, 4);
+
+        console.log(result);
+    }
+
+    async callAsync(session: autobahn.Session) {
+        let serviceProvider = new IArgumentsServiceProvider(session);
+
+        var proxy = serviceProvider.getCalleeProxy();
+
+        await proxy.ping();
+
+        console.log("Pinged!");
+
+        var result = await proxy.add2(2, 3);
+        console.log(`Add2: ${result}`);
+
+        var starred = await proxy.stars();
+        console.log(`Starred 1: ${starred}`);
+
+        starred = await proxy.stars("Homer");
+        console.log(`Starred 2: ${starred}`);
+
+        starred = await proxy.stars(null, 5);
+        console.log(`Starred 3: ${starred}`);
+
+        starred = await proxy.stars("Homer", 5);
+        console.log(`Starred 4: ${starred}`);
+
+        var orders = await proxy.orders("coffee");
+        console.log(`Orders 1: ${orders}`);
+
+        orders = await proxy.orders("coffee", 10);
+        console.log(`Orders 2: ${orders}`);
     }
 }
 
 connection.onopen = (session: autobahn.Session, details: any) => {
-    let serviceProvider2 = new IMySubscriberProvider(session);
+    let subscriberProvider = new IMySubscriberProvider(session);
 
-    var promise = serviceProvider2.registerSubscriber(new MySubscriberImpl());
+    var subscribePromise = subscriberProvider.registerSubscriber(new MySubscriberImpl());
 
-    promise.then(x => console.log("all registered!"));
+    subscribePromise.then(x => console.log("all registered!"));
 
-    let serviceProvider = new IArgumentsServiceProvider(session);
+    let argumentsProvider = new IArgumentsServiceProvider(session);
 
-    var promise2 = serviceProvider.registerCallee(new ArgumentsServiceCallee());
+    var registerPromise = argumentsProvider.registerCallee(new ArgumentsServiceCallee());
 
-    promise2.then(x => console.log("all registered!"));
+    registerPromise.then(x => console.log("all registered!"));
 
-    var proxy = serviceProvider.getCalleeProxy();
-
-    proxy.ping().then(() => console.log("Pinged!"));
-    proxy.add2(2, 3).then(result => console.log("Add2:", result));
-    proxy.stars().then(res => console.log("Starred 1:", res));
-    proxy.stars("Homer").then(res => console.log("Starred 2:", res));
-    proxy.stars(null, 5).then(res => console.log("Starred 3:", res));
-    proxy.stars("Homer", 5).then(res => console.log("Starred 4:", res));
-    proxy.orders("coffee");
-    proxy.orders("coffee", 10);
+    new Program().callAsync(session);
 };
