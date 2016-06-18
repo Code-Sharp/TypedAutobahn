@@ -1,6 +1,9 @@
 {
+  "exclude": [
+    "typings"
+  ],
   "compilerOptions": {
-    "target":"ES6",
+    "target": "ES6",
     "module": "commonjs"
   }
 }
