@@ -16,6 +16,8 @@ export class CalleeProxyBase {
     }
 
     protected singleInvokeAsync<T>(method: IMethodInfo, methodArguments: any[]): When.Promise<T> {
+        // TODO: check if unspecified methodArguments (i.e. arguments which are equal to void 0) 
+        // TODO: are optional, and if so, omit them.
         return this._session.call<T>(method.uri, methodArguments);
     }
 }
