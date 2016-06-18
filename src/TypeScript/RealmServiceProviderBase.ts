@@ -1,21 +1,14 @@
 /// <reference path="typings/main.d.ts" />
+import * as autobahn from 'autobahn';
+import * as When from 'when';
 
-try {
-    var autobahn = require('autobahn');
-    var When = require('when');
-} catch (e) {
-    // When running in browser, AutobahnJS will
-    // be included without a module system
-    var When = autobahn.when;
-}
-
-interface IMethodInfo {
+export interface IMethodInfo {
     uri: string;
     methodArguments: string[];
     endpointProvider?: (instance: any) => Function;
 }
 
-class CalleeProxyBase {
+export class CalleeProxyBase {
     private _session: autobahn.Session;
 
     constructor(session: autobahn.Session) {
@@ -27,13 +20,13 @@ class CalleeProxyBase {
     }
 }
 
-interface IContractRealmServiceProvider<TContract, TContractProxy> {
+export interface IContractRealmServiceProvider<TContract, TContractProxy> {
     registerCallee(instance: TContract): When.Promise<autobahn.IRegistration[]>;
     registerSubscriber(instance: TContract): When.Promise<autobahn.ISubscription[]>;
     getCalleeProxy(): TContractProxy;
 }
 
-class RealmServiceProviderBase {
+export class RealmServiceProviderBase {
     protected  _session: autobahn.Session;
 
     constructor(session: autobahn.Session) {
@@ -119,7 +112,14 @@ class RealmServiceProviderBase {
 
         // Keyword arguments come later
         for (let i = argsArray.length; i < argumentsMetadata.length; i++) {
-            var currentValue = kwargsValue[argumentsMetadata[i]];
+            let currentArgumentsName: string = argumentsMetadata[i];
+            let currentValue: any = undefined;
+
+            //// TODO: check if argument is optional, and if so, set it to default value
+            //if (kwargsValue.hasOwnProperty(currentArgumentsName)) {
+                currentValue = kwargsValue[currentArgumentsName];
+            //}
+
             methodArguments.push(currentValue);
         }
 

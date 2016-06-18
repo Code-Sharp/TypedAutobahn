@@ -1,103 +1,86 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+/// <reference path="RealmServiceProviderBase.ts" />
+import { CalleeProxyBase, RealmServiceProviderBase } from "./RealmServiceProviderBase";
+class IArgumentsServiceMetadata {
+}
+IArgumentsServiceMetadata.ping = {
+    uri: "com.arguments.ping",
+    methodArguments: [],
+    endpointProvider: (instance) => instance.ping
 };
-var IArgumentsServiceMetadata = (function () {
-    function IArgumentsServiceMetadata() {
+IArgumentsServiceMetadata.add2 = {
+    uri: "com.arguments.add2",
+    methodArguments: ["a", "b"],
+    endpointProvider: (instance) => instance.add2
+};
+IArgumentsServiceMetadata.stars = {
+    uri: "com.arguments.stars",
+    methodArguments: ["nick", "stars"],
+    endpointProvider: (instance) => instance.stars
+};
+IArgumentsServiceMetadata.orders = {
+    uri: "com.arguments.orders",
+    methodArguments: ["product", "limit"],
+    endpointProvider: (instance) => instance.orders
+};
+class IArgumentsServiceProxyImpl extends CalleeProxyBase {
+    constructor(session) {
+        super(session);
     }
-    IArgumentsServiceMetadata.ping = {
-        uri: "com.arguments.ping",
-        methodArguments: [],
-        endpointProvider: function (instance) { return instance.ping; }
-    };
-    IArgumentsServiceMetadata.add2 = {
-        uri: "com.arguments.add2",
-        methodArguments: ["a", "b"],
-        endpointProvider: function (instance) { return instance.add2; }
-    };
-    IArgumentsServiceMetadata.stars = {
-        uri: "com.arguments.stars",
-        methodArguments: ["nick", "stars"],
-        endpointProvider: function (instance) { return instance.stars; }
-    };
-    IArgumentsServiceMetadata.orders = {
-        uri: "com.arguments.orders",
-        methodArguments: ["product", "limit"],
-        endpointProvider: function (instance) { return instance.orders; }
-    };
-    return IArgumentsServiceMetadata;
-}());
-var IArgumentsServiceProxyImpl = (function (_super) {
-    __extends(IArgumentsServiceProxyImpl, _super);
-    function IArgumentsServiceProxyImpl(session) {
-        _super.call(this, session);
+    ping() {
+        return super.singleInvokeAsync(IArgumentsServiceMetadata.ping, []);
     }
-    IArgumentsServiceProxyImpl.prototype.ping = function () {
-        return _super.prototype.singleInvokeAsync.call(this, IArgumentsServiceMetadata.ping, []);
-    };
-    IArgumentsServiceProxyImpl.prototype.add2 = function (a, b) {
-        return _super.prototype.singleInvokeAsync.call(this, IArgumentsServiceMetadata.add2, [a, b]);
-    };
-    IArgumentsServiceProxyImpl.prototype.stars = function (nick, stars) {
-        return _super.prototype.singleInvokeAsync.call(this, IArgumentsServiceMetadata.stars, [nick, stars]);
-    };
-    IArgumentsServiceProxyImpl.prototype.orders = function (product, limit) {
-        return _super.prototype.singleInvokeAsync.call(this, IArgumentsServiceMetadata.orders, [product, limit]);
-    };
-    return IArgumentsServiceProxyImpl;
-}(CalleeProxyBase));
-var IMySubscriberMetadata = (function () {
-    function IMySubscriberMetadata() {
+    add2(a, b) {
+        return super.singleInvokeAsync(IArgumentsServiceMetadata.add2, [a, b]);
     }
-    IMySubscriberMetadata.onHeartbeat = {
-        uri: "com.myapp.heartbeat",
-        methodArguments: [],
-        endpointProvider: function (instance) { return instance.onHeartbeat; }
-    };
-    IMySubscriberMetadata.onTopic2 = {
-        uri: "com.myapp.topic2",
-        methodArguments: ["number1", "number2", "c", "d"],
-        endpointProvider: function (instance) { return instance.onTopic2; }
-    };
-    return IMySubscriberMetadata;
-}());
-var IMySubscriberProxyImpl = (function (_super) {
-    __extends(IMySubscriberProxyImpl, _super);
-    function IMySubscriberProxyImpl(session) {
-        _super.call(this, session);
+    stars(nick, stars) {
+        return super.singleInvokeAsync(IArgumentsServiceMetadata.stars, [nick, stars]);
     }
-    return IMySubscriberProxyImpl;
-}(CalleeProxyBase));
-var IArgumentsServiceProvider = (function (_super) {
-    __extends(IArgumentsServiceProvider, _super);
-    function IArgumentsServiceProvider(session) {
-        _super.call(this, session);
+    orders(product, limit) {
+        return super.singleInvokeAsync(IArgumentsServiceMetadata.orders, [product, limit]);
     }
-    IArgumentsServiceProvider.prototype.registerCallee = function (instance) {
-        return _super.prototype.registerMethodsAsCallee.call(this, instance, IArgumentsServiceMetadata.ping, IArgumentsServiceMetadata.add2, IArgumentsServiceMetadata.stars, IArgumentsServiceMetadata.orders);
-    };
-    IArgumentsServiceProvider.prototype.registerSubscriber = function (instance) {
-        return When.resolve([]);
-    };
-    IArgumentsServiceProvider.prototype.getCalleeProxy = function () {
+}
+export class IArgumentsServiceProvider extends RealmServiceProviderBase {
+    constructor(session) {
+        super(session);
+    }
+    registerCallee(instance) {
+        return super.registerMethodsAsCallee(instance, IArgumentsServiceMetadata.ping, IArgumentsServiceMetadata.add2, IArgumentsServiceMetadata.stars, IArgumentsServiceMetadata.orders);
+    }
+    registerSubscriber(instance) {
+        return super.registerMethodsAsSubscriber(instance);
+    }
+    getCalleeProxy() {
         return new IArgumentsServiceProxyImpl(this._session);
-    };
-    return IArgumentsServiceProvider;
-}(RealmServiceProviderBase));
-var IMySubscriberProvider = (function (_super) {
-    __extends(IMySubscriberProvider, _super);
-    function IMySubscriberProvider(session) {
-        _super.call(this, session);
     }
-    IMySubscriberProvider.prototype.registerCallee = function (instance) {
-        return When.resolve([]);
-    };
-    IMySubscriberProvider.prototype.registerSubscriber = function (instance) {
-        return _super.prototype.registerMethodsAsSubscriber.call(this, instance, IMySubscriberMetadata.onHeartbeat, IMySubscriberMetadata.onTopic2);
-    };
-    IMySubscriberProvider.prototype.getCalleeProxy = function () {
+}
+class IMySubscriberMetadata {
+}
+IMySubscriberMetadata.onHeartbeat = {
+    uri: "com.myapp.heartbeat",
+    methodArguments: [],
+    endpointProvider: (instance) => instance.onHeartbeat
+};
+IMySubscriberMetadata.onTopic2 = {
+    uri: "com.myapp.topic2",
+    methodArguments: ["number1", "number2", "c", "d"],
+    endpointProvider: (instance) => instance.onTopic2
+};
+class IMySubscriberProxyImpl extends CalleeProxyBase {
+    constructor(session) {
+        super(session);
+    }
+}
+export class IMySubscriberProvider extends RealmServiceProviderBase {
+    constructor(session) {
+        super(session);
+    }
+    registerCallee(instance) {
+        return super.registerMethodsAsCallee(instance);
+    }
+    registerSubscriber(instance) {
+        return super.registerMethodsAsSubscriber(instance, IMySubscriberMetadata.onHeartbeat, IMySubscriberMetadata.onTopic2);
+    }
+    getCalleeProxy() {
         return new IMySubscriberProxyImpl(this._session);
-    };
-    return IMySubscriberProvider;
-}(RealmServiceProviderBase));
+    }
+}

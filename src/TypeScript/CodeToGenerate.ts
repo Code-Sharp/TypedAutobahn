@@ -1,3 +1,7 @@
+/// <reference path="RealmServiceProviderBase.ts" />
+
+import {IContractRealmServiceProvider, IMethodInfo, CalleeProxyBase, RealmServiceProviderBase} from "./RealmServiceProviderBase";
+
 class IArgumentsServiceMetadata {
     static ping: IMethodInfo = {
         uri: "com.arguments.ping",
@@ -24,7 +28,7 @@ class IArgumentsServiceMetadata {
     };
 }
 
-interface IArgumentsService {
+export interface IArgumentsService {
     ping(): When.Promise<void> | void;
 
     add2(a: number, b: number): When.Promise<number> | number;
@@ -34,7 +38,7 @@ interface IArgumentsService {
     orders(product: string, limit?: number): When.Promise<string[]> | string[];
 }
 
-interface IArgumentsServiceProxy {
+export interface IArgumentsServiceProxy {
     ping(): When.Promise<void>;
 
     add2(a: number, b: number): When.Promise<number>;
@@ -66,7 +70,7 @@ class IArgumentsServiceProxyImpl extends CalleeProxyBase implements IArgumentsSe
     }
 }
 
-class IArgumentsServiceProvider extends RealmServiceProviderBase implements IContractRealmServiceProvider<IArgumentsService, IArgumentsServiceProxy> {
+export class IArgumentsServiceProvider extends RealmServiceProviderBase implements IContractRealmServiceProvider<IArgumentsService, IArgumentsServiceProxy> {
     constructor(session: autobahn.Session) {
         super(session);
     }
@@ -102,13 +106,13 @@ class IMySubscriberMetadata {
     };
 }
 
-interface IMySubscriber {
+export interface IMySubscriber {
     onHeartbeat(): void;
 
     onTopic2(number1: number, number2: number, c: string, d: MyClass): void;
 }
 
-interface IMySubscriberProxy {
+export interface IMySubscriberProxy {
 }
 
 class IMySubscriberProxyImpl extends CalleeProxyBase implements IMySubscriberProxy {
@@ -117,7 +121,7 @@ class IMySubscriberProxyImpl extends CalleeProxyBase implements IMySubscriberPro
     }
 }
 
-class IMySubscriberProvider extends RealmServiceProviderBase implements IContractRealmServiceProvider<IMySubscriber, IMySubscriberProxy> {
+export class IMySubscriberProvider extends RealmServiceProviderBase implements IContractRealmServiceProvider<IMySubscriber, IMySubscriberProxy> {
     constructor(session: autobahn.Session) {
         super(session);
     }
@@ -137,7 +141,7 @@ class IMySubscriberProvider extends RealmServiceProviderBase implements IContrac
     }
 }
 
-interface MyClass {
-    Counter: number;
-    Foo: number[];
+export interface MyClass {
+    counter: number;
+    foo: number[];
 }

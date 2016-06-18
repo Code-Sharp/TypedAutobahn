@@ -1,11 +1,14 @@
-﻿using WampSharp.V2.PubSub;
+﻿using System.Runtime.Serialization;
+using WampSharp.V2.PubSub;
 
 namespace TypedAutobahn.CodeGenerator
 {
     public class MyClass
     {
+        [DataMember(Name = "counter")]
         public int Counter { get; set; }
 
+        [DataMember(Name = "foo")]
         public int[] Foo { get; set; }
 
         public override string ToString()

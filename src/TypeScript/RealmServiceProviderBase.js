@@ -1,88 +1,69 @@
-/// <reference path="typings/main.d.ts" />
-try {
-    var autobahn = require('autobahn');
-    var when = require('when');
-}
-catch (e) {
-    // When running in browser, AutobahnJS will
-    // be included without a module system
-    var When = autobahn.when;
-}
-var CalleeProxyBase = (function () {
-    function CalleeProxyBase(session) {
+export class CalleeProxyBase {
+    constructor(session) {
         this._session = session;
     }
-    CalleeProxyBase.prototype.singleInvokeAsync = function (method, methodArguments) {
+    singleInvokeAsync(method, methodArguments) {
         return this._session.call(method.uri, methodArguments);
-    };
-    return CalleeProxyBase;
-}());
-var RealmServiceProviderBase = (function () {
-    function RealmServiceProviderBase(session) {
+    }
+}
+export class RealmServiceProviderBase {
+    constructor(session) {
         this._session = session;
     }
-    RealmServiceProviderBase.prototype.registerMethodAsSubscriber = function (methodInfo, callback) {
-        var _this = this;
-        var modifiedEndpoint = function (args, kwargs, details) {
-            var methodArguments = _this.extractArguments(args, kwargs, methodInfo);
+    registerMethodAsSubscriber(methodInfo, callback) {
+        var modifiedEndpoint = (args, kwargs, details) => {
+            let methodArguments = this.extractArguments(args, kwargs, methodInfo);
             callback(methodArguments);
         };
         var promise = this._session.subscribe(methodInfo.uri, modifiedEndpoint);
         return promise;
-    };
-    RealmServiceProviderBase.prototype.registerInstanceMethodInfoAsCallee = function (instance, methodInfo) {
+    }
+    registerInstanceMethodInfoAsCallee(instance, methodInfo) {
         var converted = RealmServiceProviderBase.convertCallback(instance, methodInfo);
         var promise = this.registerMethodAsCallee(methodInfo, converted);
         return promise;
-    };
-    RealmServiceProviderBase.prototype.registerMethodsAsCallee = function (instance) {
-        var _this = this;
-        var methods = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            methods[_i - 1] = arguments[_i];
-        }
-        var registrations = methods.map(function (method) { return _this.registerInstanceMethodInfoAsCallee(instance, method); });
+    }
+    registerMethodsAsCallee(instance, ...methods) {
+        var registrations = methods.map(method => this.registerInstanceMethodInfoAsCallee(instance, method));
         return When.join(registrations);
-    };
-    RealmServiceProviderBase.prototype.registerInstanceMethodInfoAsSubscriber = function (instance, methodInfo) {
+    }
+    registerInstanceMethodInfoAsSubscriber(instance, methodInfo) {
         var converted = RealmServiceProviderBase.convertCallback(instance, methodInfo);
         var promise = this.registerMethodAsSubscriber(methodInfo, converted);
         return promise;
-    };
-    RealmServiceProviderBase.prototype.registerMethodsAsSubscriber = function (instance) {
-        var _this = this;
-        var methods = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            methods[_i - 1] = arguments[_i];
-        }
-        var subscriptions = methods.map(function (method) { return _this.registerInstanceMethodInfoAsSubscriber(instance, method); });
+    }
+    registerMethodsAsSubscriber(instance, ...methods) {
+        var subscriptions = methods.map(method => this.registerInstanceMethodInfoAsSubscriber(instance, method));
         return When.join(subscriptions);
-    };
-    RealmServiceProviderBase.convertCallback = function (instance, methodInfo) {
-        return function (argArray) { return methodInfo.endpointProvider(instance).apply(instance, argArray); };
-    };
-    RealmServiceProviderBase.prototype.registerMethodAsCallee = function (methodInfo, callback) {
-        var _this = this;
-        var modifiedEndpoint = function (args, kwargs, details) {
-            var methodArguments = _this.extractArguments(args, kwargs, methodInfo);
+    }
+    static convertCallback(instance, methodInfo) {
+        return (argArray) => methodInfo.endpointProvider(instance).apply(instance, argArray);
+    }
+    registerMethodAsCallee(methodInfo, callback) {
+        var modifiedEndpoint = (args, kwargs, details) => {
+            let methodArguments = this.extractArguments(args, kwargs, methodInfo);
             return callback(methodArguments);
         };
         var promise = this._session.register(methodInfo.uri, modifiedEndpoint);
         return promise;
-    };
-    RealmServiceProviderBase.prototype.extractArguments = function (args, kwargs, methodInfo) {
+    }
+    extractArguments(args, kwargs, methodInfo) {
         var methodArguments = [];
-        var argsArray = args || [];
-        var kwargsValue = kwargs || {};
-        var argumentsMetadata = methodInfo.methodArguments;
+        let argsArray = args || [];
+        let kwargsValue = kwargs || {};
+        let argumentsMetadata = methodInfo.methodArguments;
         // Positional arguments have precedence
         methodArguments = argsArray.slice(0, argumentsMetadata.length);
         // Keyword arguments come later
-        for (var i = argsArray.length; i < argumentsMetadata.length; i++) {
-            var currentValue = kwargsValue[argumentsMetadata[i]];
+        for (let i = argsArray.length; i < argumentsMetadata.length; i++) {
+            let currentArgumentsName = argumentsMetadata[i];
+            let currentValue = undefined;
+            //// TODO: check if argument is optional, and if so, set it to default value
+            //if (kwargsValue.hasOwnProperty(currentArgumentsName)) {
+            currentValue = kwargsValue[currentArgumentsName];
+            //}
             methodArguments.push(currentValue);
         }
         return methodArguments;
-    };
-    return RealmServiceProviderBase;
-}());
+    }
+}

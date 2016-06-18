@@ -15,7 +15,8 @@ namespace TypedAutobahn.CodeGenerator
             var generatedCode =
                 session.GenerateCode(new Type[]
                 {
-                    typeof(IArgumentsService), typeof(IMySubscriber)
+                    typeof(IArgumentsService)
+                    //, typeof(IMySubscriber)
                 });
         }
     }

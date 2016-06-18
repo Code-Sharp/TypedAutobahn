@@ -1,4 +1,8 @@
-class ArgumentsServiceCallee implements IArgumentsService {
+/// <reference path="RealmServiceProviderBase.ts" />
+/// <reference path="CodeToGenerate.ts" />
+import {IArgumentsService} from "./CodeToGenerate";
+
+export class ArgumentsServiceCallee implements IArgumentsService {
     private _orders: number[];
 
     constructor() {
@@ -21,6 +25,6 @@ class ArgumentsServiceCallee implements IArgumentsService {
     }
 
     orders(product: string, limit: number = 5): string[] {
-        return this._orders.slice(0, limit).map(index => { return `Product ${index}` });
+        return this._orders.slice(0, limit).map(index => `Product ${index}`);
     }
 }
