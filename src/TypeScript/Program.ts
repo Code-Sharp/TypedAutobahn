@@ -22,7 +22,7 @@ class Program {
     async MyMethod(session : autobahn.Session) {
         let serviceProvider = new IArgumentsServiceProvider(session);
 
-        var result = await serviceProvider.getCalleeProxy().add2(3, 4);
+        let result = await serviceProvider.getCalleeProxy().add2(3, 4);
 
         console.log(result);
     }
@@ -30,16 +30,16 @@ class Program {
     async callAsync(session: autobahn.Session) {
         let serviceProvider = new IArgumentsServiceProvider(session);
 
-        var proxy = serviceProvider.getCalleeProxy();
+        let proxy = serviceProvider.getCalleeProxy();
 
         await proxy.ping();
 
         console.log("Pinged!");
 
-        var result = await proxy.add2(2, 3);
+        let result = await proxy.add2(2, 3);
         console.log(`Add2: ${result}`);
 
-        var starred = await proxy.stars();
+        let starred = await proxy.stars();
         console.log(`Starred 1: ${starred}`);
 
         starred = await proxy.stars("Homer");
@@ -51,7 +51,7 @@ class Program {
         starred = await proxy.stars("Homer", 5);
         console.log(`Starred 4: ${starred}`);
 
-        var orders = await proxy.orders("coffee");
+        let orders = await proxy.orders("coffee");
         console.log(`Orders 1: ${orders}`);
 
         orders = await proxy.orders("coffee", 10);
@@ -62,13 +62,13 @@ class Program {
 connection.onopen = (session: autobahn.Session, details: any) => {
     let subscriberProvider = new IMySubscriberProvider(session);
 
-    var subscribePromise = subscriberProvider.registerSubscriber(new MySubscriberImpl());
+    let subscribePromise = subscriberProvider.registerSubscriber(new MySubscriberImpl());
 
     subscribePromise.then(x => console.log("all registered!"));
 
     let argumentsProvider = new IArgumentsServiceProvider(session);
 
-    var registerPromise = argumentsProvider.registerCallee(new ArgumentsServiceCallee());
+    let registerPromise = argumentsProvider.registerCallee(new ArgumentsServiceCallee());
 
     registerPromise.then(x => console.log("all registered!"));
 
