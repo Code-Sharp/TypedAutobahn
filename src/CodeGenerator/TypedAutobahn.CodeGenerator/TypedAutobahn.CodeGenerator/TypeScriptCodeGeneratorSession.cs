@@ -17,22 +17,22 @@ namespace TypedAutobahn.CodeGenerator
             mMapper = new ContractMapper(nameProvider);
         }
 
-        public string GenerateCode(Type[] contractTypes)
+        public string GenerateCode(Type[] contractTypes, Type[] dataContracts)
         {
             string contractsCode =
                 string.Join(Environment.NewLine+ Environment.NewLine,
                             contractTypes.Select(x => GenerateContractTypeCode(x)));
 
-            string commonCode = GenerateCommonCode(contractTypes);
+            string commonCode = GenerateCommonCode(contractTypes, dataContracts);
 
             return $@"{contractsCode}{commonCode}";
         }
 
-        private string GenerateCommonCode(Type[] contractTypes)
+        private string GenerateCommonCode(Type[] contractTypes, Type[] dataContracts)
         {
             DataContractGenerator generator = new DataContractGenerator(mMapper, mNameProvider, mNodeJs);
 
-            return generator.GenerateDataContracts(contractTypes);
+            return generator.GenerateDataContracts(contractTypes, dataContracts);
         }
 
         private string GenerateContractTypeCode(Type contractType)

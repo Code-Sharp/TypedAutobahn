@@ -20,14 +20,15 @@ namespace TypedAutobahn.CodeGenerator
             mNodeJs = nodeJs;
         }
 
-        private Type[] GatherDataContracts(Type[] interfaces)
+        private Type[] GatherDataContracts(Type[] interfaces, Type[] contracts)
         {
             IEnumerable<Type> initialTypes =
-                interfaces.SelectMany(x => x.GetMethods())
-                          .Where(x => x.IsDefined(WampSharpAttributes.WampProcedureAttribute, true) ||
-                                      x.IsDefined(WampSharpAttributes.WampTopicAttribute, true))
-                          .SelectMany(x => x.GetParameters().Select(parameter => parameter.ParameterType)
-                                            .Concat(new[] {TaskExtensions.UnwrapReturnType(x.ReturnType)}));
+                (interfaces.SelectMany(x => x.GetMethods())
+                           .Where(x => x.IsDefined(WampSharpAttributes.WampProcedureAttribute, true) ||
+                                       x.IsDefined(WampSharpAttributes.WampTopicAttribute, true))
+                           .SelectMany(x => x.GetParameters().Select(parameter => parameter.ParameterType)
+                                             .Concat(new[] {TaskExtensions.UnwrapReturnType(x.ReturnType)})))
+                    .Concat(contracts);
 
             TypeExplorer typeExplorer =
                 new TypeExplorer(type => type.IsPrimitive ||
@@ -59,9 +60,9 @@ namespace TypedAutobahn.CodeGenerator
             return gatherDataContracts.ToArray();
         }
 
-        public string GenerateDataContracts(Type[] interfaces)
+        public string GenerateDataContracts(Type[] interfaces, Type[] contracts)
         {
-            Type[] dataContracts = GatherDataContracts(interfaces);
+            Type[] dataContracts = GatherDataContracts(interfaces, contracts);
 
             List<string> generatedContracts = new List<string>();
 

@@ -17,6 +17,9 @@ namespace TypedAutobahn.CodeGenerator
                 {
                     typeof(IArgumentsService)
                     , typeof(IMySubscriber)
+                }, new Type[]
+                {
+                    
                 });
         }
     }
