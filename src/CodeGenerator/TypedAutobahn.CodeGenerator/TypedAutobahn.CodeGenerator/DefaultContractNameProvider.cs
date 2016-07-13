@@ -16,17 +16,17 @@ namespace TypedAutobahn.CodeGenerator
             return char.ToLower(value[0]) + value.Substring(1);
         }
 
-        public string ProvideName(MethodInfo method)
+        public virtual string ProvideName(MethodInfo method)
         {
             return CamelCase(method.Name);
         }
 
-        public string ProvideName(ParameterInfo parameter)
+        public virtual string ProvideName(ParameterInfo parameter)
         {
             return parameter.Name;
         }
 
-        public string ProvideName(Type type)
+        public virtual string ProvideName(Type type)
         {
             string typeName = type.Name;
 
@@ -40,12 +40,30 @@ namespace TypedAutobahn.CodeGenerator
             }
         }
 
-        public string ProvideName(PropertyInfo property)
+        public virtual string ProvideName(PropertyInfo property)
         {
             if (property.IsDefined(typeof(DataMemberAttribute)))
             {
                 DataMemberAttribute attribute = property.GetCustomAttribute<DataMemberAttribute>();
-                return attribute.Name;
+
+                string attributeName = attribute.Name;
+
+                if (!string.IsNullOrEmpty(attributeName))
+                {
+                    return attributeName;
+                }
+            }
+            else if (NewtonsoftJsonAttributes.JsonPropertyAttribute != null &&
+                     property.IsDefined(NewtonsoftJsonAttributes.JsonPropertyAttribute))
+            {
+                dynamic attribute = property.GetCustomAttribute(NewtonsoftJsonAttributes.JsonPropertyAttribute);
+
+                string attributeName = attribute.PropertyName;
+
+                if (!string.IsNullOrEmpty(attributeName))
+                {
+                    return attributeName;
+                }
             }
 
             return property.Name;

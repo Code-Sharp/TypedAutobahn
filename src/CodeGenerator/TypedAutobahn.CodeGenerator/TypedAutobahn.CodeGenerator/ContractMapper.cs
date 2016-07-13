@@ -57,20 +57,11 @@ namespace TypedAutobahn.CodeGenerator
 
         public string MapType(Type parameterType)
         {
+            // TODO: Handle dictionaries
             if (parameterType.IsGenericType &&
                 parameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 return MapType(parameterType.GetGenericArguments()[0]);
-            }
-            else if (typeof(ICollection<>).IsGenericAssignableFrom(parameterType))
-            {
-                Type elementType =
-                    parameterType.GetClosedGenericTypeImplementation(typeof(ICollection<>))
-                                 .GetGenericArguments()[0];
-
-                string arrayType = MapType(elementType);
-
-                return arrayType + "[]";
             }
             else if (parameterType.IsGenericType)
             {
@@ -101,6 +92,16 @@ namespace TypedAutobahn.CodeGenerator
             else if (parameterType == typeof(object))
             {
                 return "any";
+            }
+            else if (typeof(IEnumerable<>).IsGenericAssignableFrom(parameterType))
+            {
+                Type elementType =
+                    parameterType.GetClosedGenericTypeImplementation(typeof(IEnumerable<>))
+                                 .GetGenericArguments()[0];
+
+                string arrayType = MapType(elementType);
+
+                return arrayType + "[]";
             }
             else
             {

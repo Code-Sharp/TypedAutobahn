@@ -35,7 +35,9 @@ namespace TypedAutobahn.CodeGenerator
                                          type == typeof(Nullable<>) ||
                                          type == typeof(DateTime) ||
                                          type == typeof(object),
-                                 property => !property.IsDefined(typeof(IgnoreDataMemberAttribute)));
+                                 property => !property.IsDefined(typeof(IgnoreDataMemberAttribute)) &&
+                                 !((NewtonsoftJsonAttributes.JsonIgnoreAttribute != null) && 
+                                 property.IsDefined(NewtonsoftJsonAttributes.JsonIgnoreAttribute)));
 
             foreach (Type type in initialTypes)
             {
@@ -93,7 +95,11 @@ namespace TypedAutobahn.CodeGenerator
             }
 
 
-            IEnumerable<PropertyInfo> properties = dataContract.GetProperties().Where(x => !x.IsDefined(typeof(IgnoreDataMemberAttribute)));
+            IEnumerable<PropertyInfo> properties =
+                dataContract.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                            .Where(x => !x.IsDefined(typeof(IgnoreDataMemberAttribute)) &&
+                                        !(NewtonsoftJsonAttributes.JsonIgnoreAttribute != null &&
+                                         x.IsDefined(NewtonsoftJsonAttributes.JsonIgnoreAttribute)));
 
             IEnumerable<string> generatedProperties = 
                 properties.Select(x => $"    {mProvider.ProvideName(x)} : {mMapper.MapType(x.PropertyType)};");

@@ -61,7 +61,9 @@ namespace TypedAutobahn.CodeGenerator
                 return;
             }
 
-            foreach (PropertyInfo property in type.GetProperties().Where(mPropertyFilter))
+            foreach (PropertyInfo property in 
+                type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                    .Where(mPropertyFilter))
             {
                 Explore(property.PropertyType);
             }
