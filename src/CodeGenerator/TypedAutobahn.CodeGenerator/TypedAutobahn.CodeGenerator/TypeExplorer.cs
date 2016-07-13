@@ -33,7 +33,17 @@ namespace TypedAutobahn.CodeGenerator
                 return;
             }
 
-            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            if (typeof(IDictionary<,>).IsGenericAssignableFrom(type))
+            {
+                ExplorePredefinedGenericType(type, typeof(IDictionary<,>));
+                return;
+            }
+            else if (typeof(IEnumerable<>).IsGenericAssignableFrom(type))
+            {
+                ExplorePredefinedGenericType(type, typeof(IEnumerable<>));
+                return;
+            }
+            else if (type.IsGenericType && !type.IsGenericTypeDefinition)
             {
                 Explore(type.GetGenericTypeDefinition());
 
@@ -67,6 +77,19 @@ namespace TypedAutobahn.CodeGenerator
             {
                 Explore(property.PropertyType);
             }
-        }        
+        }
+
+        private void ExplorePredefinedGenericType(Type type, Type predefinedType)
+        {
+            Type closedGenericType =
+                type.GetClosedGenericTypeImplementation(predefinedType);
+
+            Type[] arguments = closedGenericType.GetGenericArguments();
+
+            foreach (Type argument in arguments)
+            {
+                Explore(argument);
+            }
+        }
     }
 }

@@ -8,6 +8,14 @@ export interface IMethodInfo {
     endpoint?: (instance: any, argArray : any[]) => any;
 }
 
+export interface StringKeyedDictionary<TValue> {
+    [key: string]: TValue;
+}
+
+export interface NumberKeyedDictionary<TValue> {
+    [key: number]: TValue;
+}
+
 export class CalleeProxyBase {
     private _session: autobahn.Session;
 

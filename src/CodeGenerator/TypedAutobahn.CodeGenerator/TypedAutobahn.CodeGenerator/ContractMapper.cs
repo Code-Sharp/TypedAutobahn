@@ -57,8 +57,11 @@ namespace TypedAutobahn.CodeGenerator
 
         public string MapType(Type parameterType)
         {
-            // TODO: Handle dictionaries
-            if (parameterType.IsGenericType &&
+            if (typeof(IDictionary<,>).IsGenericAssignableFrom(parameterType))
+            {
+                return HandleDictionary(parameterType);
+            }
+            else if (parameterType.IsGenericType &&
                 parameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 return MapType(parameterType.GetGenericArguments()[0]);
@@ -106,6 +109,31 @@ namespace TypedAutobahn.CodeGenerator
             else
             {
                 return MapCompositeType(parameterType);
+            }
+        }
+
+        private string HandleDictionary(Type parameterType)
+        {
+            Type dictionaryType =
+                parameterType.GetClosedGenericTypeImplementation(typeof(IDictionary<,>));
+
+            Type[] genericArguments = dictionaryType.GetGenericArguments();
+
+            string keyType = MapType(genericArguments[0]);
+            string valueType = MapType(genericArguments[1]);
+
+            if (keyType == "string")
+            {
+                return $"StringKeyedDictionary<{valueType}>";
+            }
+            else if (keyType == "number")
+            {
+                return $"NumberKeyedDictionary<{valueType}>";
+            }
+            else
+            {
+                throw new Exception(
+                    $"Received {genericArguments[0]} keyed dictionary. Only number or string keys are supported");
             }
         }
     }
